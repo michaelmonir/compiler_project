@@ -1,18 +1,37 @@
 cmake_minimum_required(VERSION 3.28)
 project(compiler_project)
 
+# Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Main project executable
 add_executable(compiler_project src/main.cpp)
 
-add_subdirectory(googletest)
+# Add Google Test from the external/gtest directory
+add_subdirectory(external/gtest)
+
+# Enable testing
 enable_testing()
 
 # Add test executable
-add_executable(runTests test/test_try_gtest.cpp src/try_gtest.cpp)
+add_executable(runTests 
+    test/try_gtest/try_gtest_test.cpp 
+    src/try_gtest/try_gtest.cpp
+)
 
 # Link Google Test to the test executable
 target_link_libraries(runTests PRIVATE gtest gtest_main)
 
-# Add a test
+target_include_directories(runTests PRIVATE 
+    ${CMAKE_SOURCE_DIR}/src         # Include src directory
+    ${CMAKE_SOURCE_DIR}/src/try_gtest # Include src/try_gtest directory explicitly (optional)
+)
+
+# Include directories for tests
+target_include_directories(runTests PRIVATE ${CMAKE_SOURCE_DIR}/src)
+
+# Add a test for CTest
 add_test(NAME TryGTestTest COMMAND runTests)
+
+
