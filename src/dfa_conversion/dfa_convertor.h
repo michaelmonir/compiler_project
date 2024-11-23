@@ -41,6 +41,8 @@ typedef struct nfa_node_s
     vector<vector<struct nfa_node_s *>> neighbors;
     token_t token;
 
+    nfa_node_s() {}
+
     nfa_node_s(int index, vector<pair<int, struct nfa_node_s*>> edges, token_t token_input) 
         : nfa_node_index(index), neighbors(1), token(token_input)
     {
