@@ -5,47 +5,16 @@
 #include <map>
 #include <queue>
 #include <set>
+#include <iostream>
 
 using namespace std;
 
-typedef struct token_s
-{
-    int index;
-    string token_name;
-
-    bool operator<(const struct token_s& other) const {
-        return index < other.index;
-    }
-
-    bool operator==(const struct token_s& other) const {
-        return index == other.index && token_name == other.token_name;
-    }
-} token_t;
+int dfa_node_t::dfa_nodes_counter = 0;
 
 const token_t NO_TOKEN = {
     .index = inf,
     .token_name = ""
 };
-
-typedef struct dfa_node_s
-{
-    struct dfa_node_s *neighbors[DFA_INPUT_SIZE];
-    token_t token;
-} dfa_node_t;
-
-typedef struct nfa_node_s 
-{
-    int nfa_node_index;
-    vector<vector<struct nfa_node_s *>> neighbors;
-    token_t token;
-
-    nfa_node_s(int index, vector<pair<int, struct nfa_node_s*>> edges, token_t token_input) 
-        : nfa_node_index(index), neighbors(1), token(token_input)
-    {
-        for (auto [x, node] : edges) 
-            neighbors[x].push_back(node);
-    }
-} nfa_node_t;
 
 token_t get_token_nfa_nodes(vector<nfa_node_t*> input);
 bool check_start_dfa_node(vector<int> indeces, int start_index);
@@ -172,4 +141,27 @@ vector<int> get_indeces_from_nodes(vector<nfa_node_t*> nodes)
     for (int i = 0; i < n; i++) 
         indeces[i] = nodes[i]->nfa_node_index;
     return indeces;
+}
+
+void print_dfa_nodes(vector<dfa_node_t*> start_nodes)
+{
+    queue<dfa_node_t*> q;
+    set<int> visited;
+
+    for (dfa_node_t* node : start_nodes) q.push(node);
+
+    while (q.size())
+    {
+        dfa_node_t* node = q.front(); q.pop();
+        if (visited.count(node->dfa_node_index)) continue;
+
+        for (int input = 0; input < DFA_INPUT_SIZE; input++)
+        {
+            if (NULL == node->neighbors[input]) continue;
+
+            cout << "from: " << node->dfa_node_index << " ";
+            cout << "to: " << node->neighbors[input]->dfa_node_index << " ";
+            cout << "input: " << input << endl;
+        }
+    }
 }
