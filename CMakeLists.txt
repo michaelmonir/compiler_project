@@ -16,7 +16,8 @@ enable_testing()
 
 # Add test executable
 add_executable(runTests 
-    test/try_gtest/try_gtest_test.cpp 
+    test/try_gtest/try_gtest_test.cpp
+    test/dfa_conversion/dfa_convertor_test.cpp
     src/try_gtest/try_gtest.cpp
     src/dfa_conversion/dfa_convertor.cpp
 )
@@ -36,4 +37,5 @@ target_include_directories(runTests PRIVATE ${CMAKE_SOURCE_DIR}/src)
 # Add a test for CTest
 add_test(NAME TryGTestTest COMMAND runTests)
 
-
+include(GoogleTest)
+gtest_discover_tests(runTests)
