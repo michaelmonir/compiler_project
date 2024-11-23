@@ -1,0 +1,9 @@
+#ifndef DFA_CONVERTOR
+#define DFA_CONVERTOR
+
+#define EPSLON 256
+#define NFA_INPUT_SIZE 257
+#define DFA_INPUT_SIZE 256
+#define inf 100000000
+
+#endif // DFA_CONVERTOR
