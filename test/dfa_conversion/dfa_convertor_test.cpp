@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
 #include "dfa_convertor.h"
 
+#include <iostream>
+
 TEST(TRY_DFA_CONVERTOR, two) {
+    cout << "a3" << endl;
     nfa_node_t* a = new nfa_node_t();
     nfa_node_t* b = new nfa_node_t();
     nfa_node_t* c = new nfa_node_t();

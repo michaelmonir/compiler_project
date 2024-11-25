@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/runTests", // Adjust this path
-            "args": [], // Add any test arguments if needed, e.g., --gtest_filter=TestName
+            "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build", // Working directory
             "environment": [],
