@@ -9,7 +9,7 @@
 
 using namespace std;
 
-int dfa_node_t::dfa_nodes_counter = 0;
+int dfa_node_t::dfa_nodes_counter = 1;
 
 token_t token_t::NO_TOKEN = {
     .index = inf,
@@ -18,9 +18,10 @@ token_t token_t::NO_TOKEN = {
 
 token_t get_token_nfa_nodes(vector<nfa_node_t*> input);
 bool check_start_dfa_node(vector<int> indeces, set<int> start_indeces);
-void add_epslon_neighbors_to_set(nfa_node_t* start_node, map<int, nfa_node_t*> &nodes_map);
+void add_node_and_epslon_neighbors_to_map(nfa_node_t* start_node, map<int, nfa_node_t*> &nodes_map);
 vector<int> get_indeces_from_nodes(vector<nfa_node_t*> nodes);
 vector<nfa_node_t*> get_neighbors_for_input(vector<nfa_node_t*> current_nodes, int input);
+vector<nfa_node_t*> get_neighboring_epslons(vector<nfa_node_t*> start_nodes);
 
 vector<dfa_node_t*> dfa_convertor_convert(vector<nfa_node_t*> start_nodes) 
 {
@@ -35,6 +36,8 @@ vector<dfa_node_t*> dfa_convertor_convert(vector<nfa_node_t*> start_nodes)
     queue<pair<vector<nfa_node_t*>, dfa_node_t*>> q;
 
     {
+        start_nodes = get_neighboring_epslons(start_nodes);
+
         dfa_node_t* start_dfa_node = new dfa_node_t();
         q.push({start_nodes, start_dfa_node});
         vector<int> start_indeces = get_indeces_from_nodes(start_nodes);
@@ -110,7 +113,7 @@ vector<nfa_node_t*> get_neighbors_for_input(vector<nfa_node_t*> current_nodes, i
 
     for (nfa_node_t* cur_node : current_nodes) {
         for (nfa_node_t* node : cur_node->neighbors[input]) {
-            add_epslon_neighbors_to_set(node, nodes_mapp);
+            add_node_and_epslon_neighbors_to_map(node, nodes_mapp);
         } 
     }
 
@@ -122,7 +125,22 @@ vector<nfa_node_t*> get_neighbors_for_input(vector<nfa_node_t*> current_nodes, i
     return result;
 }
 
-void add_epslon_neighbors_to_set(nfa_node_t* start_node, map<int, nfa_node_t*> &nodes_map)
+vector<nfa_node_t*> get_neighboring_epslons(vector<nfa_node_t*> start_nodes)
+{
+    map<int, nfa_node_t*> mapp;
+    for (nfa_node_t* node : start_nodes) 
+        add_node_and_epslon_neighbors_to_map(node, mapp);
+
+    vector<nfa_node_t*> result;
+
+    for (auto [id, node] : mapp) {
+        result.push_back(node);
+    }
+
+    return result;   
+}
+
+void add_node_and_epslon_neighbors_to_map(nfa_node_t* start_node, map<int, nfa_node_t*> &nodes_map)
 {
     queue<nfa_node_t*> q;
     q.push(start_node);
