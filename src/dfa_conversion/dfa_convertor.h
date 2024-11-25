@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -15,6 +16,8 @@ typedef struct token_s
 {
     int index;
     string token_name;
+
+    static struct token_s NO_TOKEN;
 
     bool operator<(const struct token_s& other) const {
         return index < other.index;
@@ -28,7 +31,8 @@ typedef struct token_s
 typedef struct dfa_node_s
 {
     int dfa_node_index;
-    struct dfa_node_s *neighbors[DFA_INPUT_SIZE];
+    // struct dfa_node_s *neighbors[DFA_INPUT_SIZE];
+    map<int, struct dfa_node_s*> neighbors;
     token_t token;
     static int dfa_nodes_counter;
 
@@ -41,10 +45,10 @@ typedef struct nfa_node_s
     vector<vector<struct nfa_node_s *>> neighbors;
     token_t token;
 
-    nfa_node_s() {}
+    nfa_node_s(int index) : neighbors(NFA_INPUT_SIZE), token(token_t::NO_TOKEN), nfa_node_index(index){}
 
     nfa_node_s(int index, vector<pair<int, struct nfa_node_s*>> edges, token_t token_input) 
-        : nfa_node_index(index), neighbors(1), token(token_input)
+        : nfa_node_index(index), neighbors(NFA_INPUT_SIZE), token(token_input)
     {
         for (auto [x, node] : edges) 
             neighbors[x].push_back(node);

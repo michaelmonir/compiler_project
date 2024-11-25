@@ -11,7 +11,7 @@ using namespace std;
 
 int dfa_node_t::dfa_nodes_counter = 0;
 
-const token_t NO_TOKEN = {
+token_t token_t::NO_TOKEN = {
     .index = inf,
     .token_name = ""
 };
@@ -54,12 +54,18 @@ vector<dfa_node_t*> dfa_convertor_convert(nfa_node_t* start)
             start_dfa_nodes.push_back(dfa_node);
         }
 
+        cout << "nfa nodes of dfa node #" << dfa_node->dfa_node_index << endl;
+        for (int index : incoming_indeces) cout << index << " ";
+        cout << endl;
+
         // for each input determine the next dfa node
         // if dfa node for same nfa nodes create before, reuse it using the map
         for (int input = 0; input < DFA_INPUT_SIZE; input++) 
         {
             vector<nfa_node_t*> neighbors = get_neighbors_for_input(start_nodes, input);
             vector<int> neighbor_indeces = get_indeces_from_nodes(neighbors);
+
+            if (0 == neighbors.size()) continue;
             
             dfa_node_t* next_dfa_node;
 
@@ -71,7 +77,10 @@ vector<dfa_node_t*> dfa_convertor_convert(nfa_node_t* start)
             {
                 next_dfa_node = new dfa_node_t();
                 mapp[neighbor_indeces] = next_dfa_node;
+
+                q.push({neighbors, next_dfa_node});
             }
+            dfa_node->neighbors[input] = next_dfa_node;
         }
     }
 
@@ -80,7 +89,7 @@ vector<dfa_node_t*> dfa_convertor_convert(nfa_node_t* start)
 
 token_t get_token_nfa_nodes(vector<nfa_node_t*> input)
 {
-    token_t res = NO_TOKEN;
+    token_t res = token_t::NO_TOKEN;
 
     for (nfa_node_t* node : input)
     {
@@ -150,10 +159,17 @@ void print_dfa_nodes(vector<dfa_node_t*> start_nodes)
 
     for (dfa_node_t* node : start_nodes) q.push(node);
 
+    vector<pair<int, int>> nodes_with_tokens;
+
     while (q.size())
     {
         dfa_node_t* node = q.front(); q.pop();
         if (visited.count(node->dfa_node_index)) continue;
+        visited.emplace(node->dfa_node_index);
+
+        if (inf != node->token.index) {
+            nodes_with_tokens.push_back({node->dfa_node_index, node->token.index});
+        }
 
         for (int input = 0; input < DFA_INPUT_SIZE; input++)
         {
@@ -162,6 +178,11 @@ void print_dfa_nodes(vector<dfa_node_t*> start_nodes)
             cout << "from: " << node->dfa_node_index << " ";
             cout << "to: " << node->neighbors[input]->dfa_node_index << " ";
             cout << "input: " << input << endl;
+
+            q.push(node->neighbors[input]);
         }
     }
+
+    for (auto [x, y] : nodes_with_tokens)
+        cout << "node " << x << " token index: " << y << endl;
 }
