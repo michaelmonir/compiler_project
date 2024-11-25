@@ -17,24 +17,28 @@ token_t token_t::NO_TOKEN = {
 };
 
 token_t get_token_nfa_nodes(vector<nfa_node_t*> input);
-bool check_start_dfa_node(vector<int> indeces, int start_index);
+bool check_start_dfa_node(vector<int> indeces, set<int> start_indeces);
 void add_epslon_neighbors_to_set(nfa_node_t* start_node, map<int, nfa_node_t*> &nodes_map);
 vector<int> get_indeces_from_nodes(vector<nfa_node_t*> nodes);
 vector<nfa_node_t*> get_neighbors_for_input(vector<nfa_node_t*> current_nodes, int input);
 
-vector<dfa_node_t*> dfa_convertor_convert(nfa_node_t* start) 
+vector<dfa_node_t*> dfa_convertor_convert(vector<nfa_node_t*> start_nodes) 
 {
     vector<dfa_node_t*> start_dfa_nodes;
 
-    int start_index = start->nfa_node_index;
-    map<vector<int>, dfa_node_t*> mapp;
+    set<int> start_indeces;
 
+    for (nfa_node_t* node : start_nodes)
+        start_indeces.emplace(node->nfa_node_index);
+
+    map<vector<int>, dfa_node_t*> mapp;
     queue<pair<vector<nfa_node_t*>, dfa_node_t*>> q;
 
     {
-        vector<nfa_node_t*> start_vector = {start};
-        dfa_node_t* start_dfa_node_1 = new dfa_node_t();
-        q.push({start_vector, start_dfa_node_1});
+        dfa_node_t* start_dfa_node = new dfa_node_t();
+        q.push({start_nodes, start_dfa_node});
+        vector<int> start_indeces = get_indeces_from_nodes(start_nodes);
+        mapp[start_indeces] = start_dfa_node;
     }
 
     while (q.size())
@@ -50,7 +54,7 @@ vector<dfa_node_t*> dfa_convertor_convert(nfa_node_t* start)
 
         // checking if node is a dfa start node
         vector<int> incoming_indeces = get_indeces_from_nodes(start_nodes);
-        if (check_start_dfa_node(incoming_indeces, start_index)) {
+        if (check_start_dfa_node(incoming_indeces, start_indeces)) {
             start_dfa_nodes.push_back(dfa_node);
         }
 
@@ -135,10 +139,10 @@ void add_epslon_neighbors_to_set(nfa_node_t* start_node, map<int, nfa_node_t*> &
     }
 }
 
-bool check_start_dfa_node(vector<int> indeces, int start_index)
+bool check_start_dfa_node(vector<int> indeces, set<int> start_indeces)
 {
     for (int index : indeces) 
-        if (start_index == index) return true;
+        if (start_indeces.count(index)) return true;
     return false;
 }
 
@@ -174,10 +178,11 @@ void print_dfa_nodes(vector<dfa_node_t*> start_nodes)
         for (int input = 0; input < DFA_INPUT_SIZE; input++)
         {
             if (NULL == node->neighbors[input]) continue;
+            char c = input;
 
             cout << "from: " << node->dfa_node_index << " ";
             cout << "to: " << node->neighbors[input]->dfa_node_index << " ";
-            cout << "input: " << input << endl;
+            cout << "input: " << c << endl;
 
             q.push(node->neighbors[input]);
         }

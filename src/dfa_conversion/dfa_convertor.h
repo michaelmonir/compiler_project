@@ -55,7 +55,7 @@ typedef struct nfa_node_s
     }
 } nfa_node_t;
 
-vector<dfa_node_t*> dfa_convertor_convert(nfa_node_t* start);
+vector<dfa_node_t*> dfa_convertor_convert(vector<nfa_node_t*> start_nodes);
 
 void print_dfa_nodes(vector<dfa_node_t*> start_nodes);
 
