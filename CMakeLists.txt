@@ -6,7 +6,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Main project executable
-add_executable(compiler_project src/main.cpp src/RulesParser/RulesParser.h src/RulesParser/RulesParser.cpp src/RulesParser/RegularExpression.h src/RulesParser/RegularDefinition.h src/RulesParser/stringUtils.cpp src/RulesParser/TokenType.h)
+add_executable(compiler_project src/main.cpp src/RulesParser/RulesParser.h src/RulesParser/RulesParser.cpp src/RulesParser/RegularExpression.h src/RulesParser/RegularDefinition.h src/RulesParser/stringUtils.cpp
+        test/FileParser/string_to_relation_convertor_test.cpp
+        src/RulesParser/string_to_relation_converter.cpp
+)
 
 # Add Google Test from the external/gtest directory
 add_subdirectory(external/gtest)
@@ -17,9 +20,11 @@ enable_testing()
 # Add test executable
 add_executable(runTests 
     test/try_gtest/try_gtest_test.cpp
+    test/FileParser/string_to_relation_convertor_test.cpp
     test/dfa_conversion/dfa_convertor_test.cpp
     src/try_gtest/try_gtest.cpp
     src/dfa_conversion/dfa_convertor.cpp
+    src/RulesParser/RulesParser.cpp
 )
 
 # Link Google Test to the test executable
@@ -29,6 +34,7 @@ target_include_directories(runTests PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/try_gtest
     ${CMAKE_SOURCE_DIR}/src/dfa_conversion
+    ${CMAKE_SOURCE_DIR}/src/RulesParser
 )
 
 # Include directories for tests
