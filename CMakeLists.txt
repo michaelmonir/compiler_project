@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.23++)
 project(compiler_project)
 
 # Set the C++ standard
@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Main project executable
-add_executable(compiler_project src/main.cpp)
+add_executable(compiler_project src/main.cpp src/RulesParser/RulesParser.h src/RulesParser/RulesParser.cpp src/RulesParser/RegularExpression.h src/RulesParser/RegularDefinition.h src/RulesParser/stringUtils.cpp)
 
 # Add Google Test from the external/gtest directory
 add_subdirectory(external/gtest)
