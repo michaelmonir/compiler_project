@@ -4,6 +4,7 @@
 
 #include <string>
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 
@@ -23,4 +24,20 @@ void removeFirstAndLastChar(string &str) {
     if (str.size() < 2) return;
     str.erase(0, 1);
     str.erase(str.size() - 1, 1);
+}
+
+pair<string, string> splitToken(string str, char delimiter) {
+    size_t pos = str.find(delimiter);
+    if (pos == string::npos) return {str, ""};
+    return {str.substr(0, pos), str.substr(pos + 1)};
+}
+
+vector<string> split(const string& str, char delimiter) {
+    vector<std::string> tokens;
+    stringstream ss(str);
+    string token;
+    while (getline(ss, token, delimiter)) {
+        tokens.push_back(token);
+    }
+    return tokens;
 }
