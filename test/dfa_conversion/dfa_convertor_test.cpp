@@ -7,12 +7,12 @@ int set_dfa_initial_value = 1;
 
 TEST(TRY_DFA_CONVERTOR, sheet_2_q_1_1) 
 {
-    dfa_node_t::dfa_nodes_counter = set_dfa_initial_value;
+    DfaNode::dfa_nodes_counter = set_dfa_initial_value;
 
     cout << "q_1_1" << endl;
-    nfa_node_t* a = new nfa_node_t(1);
-    nfa_node_t* b = new nfa_node_t(2);
-    nfa_node_t* c = new nfa_node_t(3);
+    NfaNode* a = new NfaNode(1);
+    NfaNode* b = new NfaNode(2);
+    NfaNode* c = new NfaNode(3);
     
     a->neighbors['0'].push_back(b);
     a->neighbors['1'].push_back(a);
@@ -27,22 +27,22 @@ TEST(TRY_DFA_CONVERTOR, sheet_2_q_1_1)
     b->token.index = 2;
     b->token.token_name = "token b";
 
-    vector<nfa_node_t*> start_nodes = {a, b};
+    vector<NfaNode*> start_nodes = {a, b};
 
-    vector<dfa_node_t*> dfa_result = dfa_convertor_convert(start_nodes);
+    vector<DfaNode*> dfa_result = dfa_convertor_convert(start_nodes);
 
     print_dfa_nodes(dfa_result);
 }
 
 TEST(TRY_DFA_CONVERTOR, sheet_2_q_1_2) 
 {
-    dfa_node_t::dfa_nodes_counter = set_dfa_initial_value;
+    DfaNode::dfa_nodes_counter = set_dfa_initial_value;
 
     cout << "q_1_2" << endl;
-    nfa_node_t* a = new nfa_node_t(1);
-    nfa_node_t* b = new nfa_node_t(2);
-    nfa_node_t* c = new nfa_node_t(3);
-    nfa_node_t* d = new nfa_node_t(4);
+    NfaNode* a = new NfaNode(1);
+    NfaNode* b = new NfaNode(2);
+    NfaNode* c = new NfaNode(3);
+    NfaNode* d = new NfaNode(4);
     
     a->neighbors['0'].push_back(b);
     a->neighbors['0'].push_back(c);
@@ -61,22 +61,22 @@ TEST(TRY_DFA_CONVERTOR, sheet_2_q_1_2)
     d->token.index = 4;
     d->token.token_name = "token d";
 
-    vector<nfa_node_t*> start_nodes = {a, b};
+    vector<NfaNode*> start_nodes = {a, b};
 
-    vector<dfa_node_t*> dfa_result = dfa_convertor_convert(start_nodes);
+    vector<DfaNode*> dfa_result = dfa_convertor_convert(start_nodes);
 
     print_dfa_nodes(dfa_result);
 }
 
 TEST(TRY_DFA_CONVERTOR, sheet_2_q_1_3) 
 {
-    dfa_node_t::dfa_nodes_counter = set_dfa_initial_value;
+    DfaNode::dfa_nodes_counter = set_dfa_initial_value;
 
     cout << "q_1_3" << endl;
-    nfa_node_t* a = new nfa_node_t(1);
-    nfa_node_t* b = new nfa_node_t(2);
-    nfa_node_t* c = new nfa_node_t(3);
-    nfa_node_t* d = new nfa_node_t(4);
+    NfaNode* a = new NfaNode(1);
+    NfaNode* b = new NfaNode(2);
+    NfaNode* c = new NfaNode(3);
+    NfaNode* d = new NfaNode(4);
     
     a->neighbors['0'].push_back(b);
     a->neighbors['0'].push_back(c);
@@ -96,25 +96,25 @@ TEST(TRY_DFA_CONVERTOR, sheet_2_q_1_3)
     c->token.index = 3;
     c->token.token_name = "token c";
 
-    vector<nfa_node_t*> start_nodes = {a};
+    vector<NfaNode*> start_nodes = {a};
 
-    vector<dfa_node_t*> dfa_result = dfa_convertor_convert(start_nodes);
+    vector<DfaNode*> dfa_result = dfa_convertor_convert(start_nodes);
 
     print_dfa_nodes(dfa_result);
 }
 
 TEST(TRY_DFA_CONVERTOR, sheet_2_q_3) 
 {
-    dfa_node_t::dfa_nodes_counter = set_dfa_initial_value;
+    DfaNode::dfa_nodes_counter = set_dfa_initial_value;
 
     cout << "q_3" << endl;
-    nfa_node_t* a = new nfa_node_t(1);
-    nfa_node_t* b = new nfa_node_t(2);
-    nfa_node_t* c = new nfa_node_t(3);
-    nfa_node_t* d = new nfa_node_t(4);
-    nfa_node_t* e = new nfa_node_t(5);
-    nfa_node_t* f = new nfa_node_t(6);
-    nfa_node_t* g = new nfa_node_t(7);
+    NfaNode* a = new NfaNode(1);
+    NfaNode* b = new NfaNode(2);
+    NfaNode* c = new NfaNode(3);
+    NfaNode* d = new NfaNode(4);
+    NfaNode* e = new NfaNode(5);
+    NfaNode* f = new NfaNode(6);
+    NfaNode* g = new NfaNode(7);
     
     a->neighbors[EPSLON].push_back(b);
     a->neighbors[EPSLON].push_back(c);
@@ -140,9 +140,9 @@ TEST(TRY_DFA_CONVERTOR, sheet_2_q_3)
     g->token.index = 7;
     g->token.token_name = "token g";
 
-    vector<nfa_node_t*> start_nodes = {a};
+    vector<NfaNode*> start_nodes = {a};
 
-    vector<dfa_node_t*> dfa_result = dfa_convertor_convert(start_nodes);
+    vector<DfaNode*> dfa_result = dfa_convertor_convert(start_nodes);
 
     print_dfa_nodes(dfa_result);
 }

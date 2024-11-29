@@ -9,36 +9,36 @@
 
 using namespace std;
 
-int dfa_node_t::dfa_nodes_counter = 1;
+int DfaNode::dfa_nodes_counter = 1;
 
-token_t token_t::NO_TOKEN = {
+Token Token::NO_TOKEN = {
     .index = inf,
     .token_name = ""
 };
 
-token_t get_token_nfa_nodes(vector<nfa_node_t*> input);
+Token get_token_nfa_nodes(vector<NfaNode*> input);
 bool check_start_dfa_node(vector<int> indeces, set<int> start_indeces);
-void add_node_and_epslon_neighbors_to_map(nfa_node_t* start_node, map<int, nfa_node_t*> &nodes_map);
-vector<int> get_indeces_from_nodes(vector<nfa_node_t*> nodes);
-vector<nfa_node_t*> get_neighbors_for_input(vector<nfa_node_t*> current_nodes, int input);
-vector<nfa_node_t*> get_neighboring_epslons(vector<nfa_node_t*> start_nodes);
+void add_node_and_epslon_neighbors_to_map(NfaNode* start_node, map<int, NfaNode*> &nodes_map);
+vector<int> get_indeces_from_nodes(vector<NfaNode*> nodes);
+vector<NfaNode*> get_neighbors_for_input(vector<NfaNode*> current_nodes, int input);
+vector<NfaNode*> get_neighboring_epslons(vector<NfaNode*> start_nodes);
 
-vector<dfa_node_t*> dfa_convertor_convert(vector<nfa_node_t*> start_nodes) 
+vector<DfaNode*> dfa_convertor_convert(vector<NfaNode*> start_nodes) 
 {
-    vector<dfa_node_t*> start_dfa_nodes;
+    vector<DfaNode*> start_dfa_nodes;
 
     set<int> start_indeces;
 
-    for (nfa_node_t* node : start_nodes)
+    for (NfaNode* node : start_nodes)
         start_indeces.emplace(node->nfa_node_index);
 
-    map<vector<int>, dfa_node_t*> mapp;
-    queue<pair<vector<nfa_node_t*>, dfa_node_t*>> q;
+    map<vector<int>, DfaNode*> mapp;
+    queue<pair<vector<NfaNode*>, DfaNode*>> q;
 
     {
         start_nodes = get_neighboring_epslons(start_nodes);
 
-        dfa_node_t* start_dfa_node = new dfa_node_t();
+        DfaNode* start_dfa_node = new DfaNode();
         q.push({start_nodes, start_dfa_node});
         vector<int> start_indeces = get_indeces_from_nodes(start_nodes);
         mapp[start_indeces] = start_dfa_node;
@@ -47,12 +47,12 @@ vector<dfa_node_t*> dfa_convertor_convert(vector<nfa_node_t*> start_nodes)
     while (q.size())
     {
         // get nfa nodes and their equivilant dfa node from queue
-        vector<nfa_node_t*> start_nodes = q.front().first;
-        dfa_node_t *dfa_node = q.front().second;
+        vector<NfaNode*> start_nodes = q.front().first;
+        DfaNode *dfa_node = q.front().second;
         q.pop();
 
         // set the token of the dfa node
-        token_t token = get_token_nfa_nodes(start_nodes); 
+        Token token = get_token_nfa_nodes(start_nodes); 
         dfa_node->token = token;
 
         // checking if node is a dfa start node
@@ -69,12 +69,12 @@ vector<dfa_node_t*> dfa_convertor_convert(vector<nfa_node_t*> start_nodes)
         // if dfa node for same nfa nodes create before, reuse it using the map
         for (int input = 0; input < DFA_INPUT_SIZE; input++) 
         {
-            vector<nfa_node_t*> neighbors = get_neighbors_for_input(start_nodes, input);
+            vector<NfaNode*> neighbors = get_neighbors_for_input(start_nodes, input);
             vector<int> neighbor_indeces = get_indeces_from_nodes(neighbors);
 
             if (0 == neighbors.size()) continue;
             
-            dfa_node_t* next_dfa_node;
+            DfaNode* next_dfa_node;
 
             if (mapp.count(neighbor_indeces))
             {
@@ -82,7 +82,7 @@ vector<dfa_node_t*> dfa_convertor_convert(vector<nfa_node_t*> start_nodes)
             }
             else
             {
-                next_dfa_node = new dfa_node_t();
+                next_dfa_node = new DfaNode();
                 mapp[neighbor_indeces] = next_dfa_node;
 
                 q.push({neighbors, next_dfa_node});
@@ -94,11 +94,11 @@ vector<dfa_node_t*> dfa_convertor_convert(vector<nfa_node_t*> start_nodes)
     return start_dfa_nodes;
 }
 
-token_t get_token_nfa_nodes(vector<nfa_node_t*> input)
+Token get_token_nfa_nodes(vector<NfaNode*> input)
 {
-    token_t res = token_t::NO_TOKEN;
+    Token res = Token::NO_TOKEN;
 
-    for (nfa_node_t* node : input)
+    for (NfaNode* node : input)
     {
         if (node->token.index < res.index)
             res = node->token;
@@ -107,17 +107,17 @@ token_t get_token_nfa_nodes(vector<nfa_node_t*> input)
     return res;
 }
 
-vector<nfa_node_t*> get_neighbors_for_input(vector<nfa_node_t*> current_nodes, int input)
+vector<NfaNode*> get_neighbors_for_input(vector<NfaNode*> current_nodes, int input)
 {
-    map<int, nfa_node_t*> nodes_mapp;
+    map<int, NfaNode*> nodes_mapp;
 
-    for (nfa_node_t* cur_node : current_nodes) {
-        for (nfa_node_t* node : cur_node->neighbors[input]) {
+    for (NfaNode* cur_node : current_nodes) {
+        for (NfaNode* node : cur_node->neighbors[input]) {
             add_node_and_epslon_neighbors_to_map(node, nodes_mapp);
         } 
     }
 
-    vector<nfa_node_t*> result;
+    vector<NfaNode*> result;
 
     for (auto [id, node] : nodes_mapp) {
         result.push_back(node);
@@ -125,13 +125,13 @@ vector<nfa_node_t*> get_neighbors_for_input(vector<nfa_node_t*> current_nodes, i
     return result;
 }
 
-vector<nfa_node_t*> get_neighboring_epslons(vector<nfa_node_t*> start_nodes)
+vector<NfaNode*> get_neighboring_epslons(vector<NfaNode*> start_nodes)
 {
-    map<int, nfa_node_t*> mapp;
-    for (nfa_node_t* node : start_nodes) 
+    map<int, NfaNode*> mapp;
+    for (NfaNode* node : start_nodes) 
         add_node_and_epslon_neighbors_to_map(node, mapp);
 
-    vector<nfa_node_t*> result;
+    vector<NfaNode*> result;
 
     for (auto [id, node] : mapp) {
         result.push_back(node);
@@ -140,19 +140,19 @@ vector<nfa_node_t*> get_neighboring_epslons(vector<nfa_node_t*> start_nodes)
     return result;   
 }
 
-void add_node_and_epslon_neighbors_to_map(nfa_node_t* start_node, map<int, nfa_node_t*> &nodes_map)
+void add_node_and_epslon_neighbors_to_map(NfaNode* start_node, map<int, NfaNode*> &nodes_map)
 {
-    queue<nfa_node_t*> q;
+    queue<NfaNode*> q;
     q.push(start_node);
 
     while (q.size())
     {
-        nfa_node_t* node = q.front(); q.pop();
+        NfaNode* node = q.front(); q.pop();
         if (nodes_map.count(node->nfa_node_index)) continue;
 
         nodes_map[node->nfa_node_index] = node;
 
-        for (nfa_node_t *child : node->neighbors[EPSLON])
+        for (NfaNode *child : node->neighbors[EPSLON])
             q.push(child);
     }
 }
@@ -164,7 +164,7 @@ bool check_start_dfa_node(vector<int> indeces, set<int> start_indeces)
     return false;
 }
 
-vector<int> get_indeces_from_nodes(vector<nfa_node_t*> nodes) 
+vector<int> get_indeces_from_nodes(vector<NfaNode*> nodes) 
 {
     int n = nodes.size();
     vector<int> indeces(n);
@@ -174,18 +174,18 @@ vector<int> get_indeces_from_nodes(vector<nfa_node_t*> nodes)
     return indeces;
 }
 
-void print_dfa_nodes(vector<dfa_node_t*> start_nodes)
+void print_dfa_nodes(vector<DfaNode*> start_nodes)
 {
-    queue<dfa_node_t*> q;
+    queue<DfaNode*> q;
     set<int> visited;
 
-    for (dfa_node_t* node : start_nodes) q.push(node);
+    for (DfaNode* node : start_nodes) q.push(node);
 
     vector<pair<int, int>> nodes_with_tokens;
 
     while (q.size())
     {
-        dfa_node_t* node = q.front(); q.pop();
+        DfaNode* node = q.front(); q.pop();
         if (visited.count(node->dfa_node_index)) continue;
         visited.emplace(node->dfa_node_index);
 

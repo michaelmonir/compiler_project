@@ -12,51 +12,52 @@
 
 using namespace std;
 
-typedef struct token_s
-{
+class Token {
+public:
     int index;
     string token_name;
 
-    static struct token_s NO_TOKEN;
+    static Token NO_TOKEN;
 
-    bool operator<(const struct token_s& other) const {
+    bool operator<(const Token& other) const {
         return index < other.index;
     }
 
-    bool operator==(const struct token_s& other) const {
+    bool operator==(const Token& other) const {
         return index == other.index && token_name == other.token_name;
     }
-} token_t;
+};
 
-typedef struct dfa_node_s
-{
-    int dfa_node_index;
-    // struct dfa_node_s *neighbors[DFA_INPUT_SIZE];
-    map<int, struct dfa_node_s*> neighbors;
-    token_t token;
+class DfaNode {
+public:
     static int dfa_nodes_counter;
 
-    dfa_node_s() : dfa_node_index(dfa_nodes_counter++){ }
-} dfa_node_t;
+    int dfa_node_index;
+    map<int, DfaNode*> neighbors;
+    Token token;
 
-typedef struct nfa_node_s 
-{
+    DfaNode() : dfa_node_index(dfa_nodes_counter++) {}
+};
+
+class NfaNode {
+public:
     int nfa_node_index;
-    vector<vector<struct nfa_node_s *>> neighbors;
-    token_t token;
+    vector<vector<NfaNode*>> neighbors;
+    Token token;
 
-    nfa_node_s(int index) : neighbors(NFA_INPUT_SIZE), token(token_t::NO_TOKEN), nfa_node_index(index){}
+    NfaNode(int index)
+        : nfa_node_index(index), neighbors(NFA_INPUT_SIZE), token(Token::NO_TOKEN) {}
 
-    nfa_node_s(int index, vector<pair<int, struct nfa_node_s*>> edges, token_t token_input) 
+    NfaNode(int index, vector<pair<int, NfaNode*>> edges, Token token_input)
         : nfa_node_index(index), neighbors(NFA_INPUT_SIZE), token(token_input)
     {
-        for (auto [x, node] : edges) 
+        for (auto [x, node] : edges)
             neighbors[x].push_back(node);
     }
-} nfa_node_t;
+};
 
-vector<dfa_node_t*> dfa_convertor_convert(vector<nfa_node_t*> start_nodes);
+vector<DfaNode*> dfa_convertor_convert(vector<NfaNode*> start_nodes);
 
-void print_dfa_nodes(vector<dfa_node_t*> start_nodes);
+void print_dfa_nodes(vector<DfaNode*> start_nodes);
 
 #endif // DFA_CONVERTOR
