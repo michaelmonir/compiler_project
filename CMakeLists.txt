@@ -18,8 +18,10 @@ enable_testing()
 add_executable(runTests 
     test/try_gtest/try_gtest_test.cpp
     test/dfa_conversion/dfa_convertor_test.cpp
+    test/minimal_dfa/minimal_dfa_test.cpp
     src/try_gtest/try_gtest.cpp
     src/dfa_conversion/dfa_convertor.cpp
+    src/minimal_dfa/minimal_dfa.cpp
 )
 
 # Link Google Test to the test executable
@@ -29,6 +31,7 @@ target_include_directories(runTests PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/try_gtest
     ${CMAKE_SOURCE_DIR}/src/dfa_conversion
+    ${CMAKE_SOURCE_DIR}/src/minimal_dfa
 )
 
 # Include directories for tests
