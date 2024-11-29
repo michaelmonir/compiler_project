@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "dfa_convertor.h"
+#include "../src/dfa_conversion/dfa_convertor.h"
 
 #include <iostream>
 

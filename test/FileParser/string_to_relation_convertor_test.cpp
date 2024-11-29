@@ -1,3 +1,7 @@
-// #include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
-// #include "RulesParser.h"
+#include "../src/RulesParser/RulesParser.h"
+
+TEST(StringToRelationConvertor, test1) {
+
+}
