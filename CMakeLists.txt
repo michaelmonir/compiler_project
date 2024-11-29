@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Main project executable
-add_executable(compiler_project src/main.cpp src/RulesParser/RulesParser.h src/RulesParser/RulesParser.cpp src/RulesParser/RegularExpression.h src/RulesParser/RegularDefinition.h src/RulesParser/stringUtils.cpp
+add_executable(compiler_project src/main.cpp src/RulesParser/RulesParser.h src/RulesParser/RulesParser.cpp src/RulesParser/stringUtils.h
         test/FileParser/string_to_relation_convertor_test.cpp
         src/RulesParser/string_to_relation_converter.cpp
 )

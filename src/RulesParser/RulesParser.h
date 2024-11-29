@@ -7,10 +7,28 @@
 
 #include <string>
 #include <vector>
-#include "RegularExpression.h"
-#include "stringUtils.cpp"
 
 using namespace std;
+
+enum TokenType {
+    KEYWORD,
+    PUNCTUATION,
+    REGULAR_DEFINITION,
+    REGULAR_EXPRESSION,
+    UNDEFINED
+};
+
+class RegularDefinition {
+};
+class RegularExpression {
+private:
+    string name;
+    string regex;
+    TokenType priority;
+public:
+    TokenType getPriority() { return priority; }
+    RegularExpression(string name, string regex, TokenType priority) : name(name), regex(regex), priority(priority) {};
+};
 
 class RulesParser {
     private:

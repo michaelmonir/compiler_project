@@ -1,6 +1,5 @@
-//
-// Created by pc on 11/29/2024.
-//
+#ifndef STRING_UTILS_H
+#define STRING_UTILS_H
 
 #include <string>
 #include <algorithm>
@@ -42,3 +41,5 @@ vector<string> split(const string& str, char delimiter) {
     }
     return tokens;
 }
+
+#endif // STRING_UTILS_H
