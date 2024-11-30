@@ -113,13 +113,13 @@ TEST(StringToRelationConvertor, test4)
 
     token_map["letter"] = new Token(1, "letter");
     token_map["digit"] = new Token(2, "digit");
+    token_map["digits"] = new Token(3, "digits");
 
-    string input = " digit+ | digit+ . digits ( x | E digits)";
+    string input = " digit+ | digit+ . digits ( \\L | E digits)";
 
     Relation *relation = get_relation_from_infix(input, token_map);
 
     string output = get_string_from_relation(relation);
 
-    cout << output << endl;
-    // EXPECT_EQ(output, "(token{letter} . ((token{letter} | token{digit})*))");
+    EXPECT_EQ(output, "((token{digit}+) | ((((token{digit}+) . char{46}) . token{digits}) . (char{256} | (char{69} . token{digits}))))");
 }

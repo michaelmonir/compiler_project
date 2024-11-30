@@ -9,8 +9,10 @@
 #include "string_to_relation_converter.h"
 
 #include <queue>
+#include <set>
 
 map<string, Token*> token_map;
+set<char> special_characters = {'\\', '=', ':', '-', '|', '+', '*', '(', ')'};
 
 class Word {
 public:
@@ -74,11 +76,22 @@ Relation* get_relation_from_infix(string &input, map<string, Token*> input_token
     return convert_postfix_to_relation(postfix);
 }
 
+pair<bool, char> get_char_at_pos(string &s, int &pos) {
+    if (s[pos] == ' ') return {false, ' '};
+    if (s[pos] != '\\') {
+        if (special_characters.count(s[pos])) return {false, s[pos]};
+        return {true, s[pos++]};
+    }
+    if (pos == s.size() - 1) throw invalid_argument("no character after after \\");
+    if (s[pos+1] == 'L') return {false, 'L'};
+    return {true, s[++pos]};
+}
+
 vector<Word*> extract_words_from_string(string input) {
     vector<Word*> words;
-    size_t length = input.length();
+    int length = input.length();
 
-    for (size_t i = 0; i < length; ++i) {
+    for (int i = 0; i < length; ++i) {
         char current_char = input[i];
 
         if (current_char == '\\') {
@@ -99,11 +112,15 @@ vector<Word*> extract_words_from_string(string input) {
             }
         } else if (string("-|+*()").find(current_char) != string::npos) {
             words.push_back(new OperatorWord(current_char));
-        } else if (isalnum(current_char)) {
-            // Token word (could span multiple characters)
+        } else if (isspace(current_char)) {
+            continue;
+        } else {
             string word;
-            while (i < length && isalnum(input[i])) {
-                word += input[i++];
+            while (i < length) {
+                auto [valid_char, c] = get_char_at_pos(input, i);
+                if (!valid_char) break;
+
+                word += c;
             }
             --i; // Adjust for the last increment in the loop
             if (token_map.find(word) != token_map.end()) {
@@ -113,10 +130,6 @@ vector<Word*> extract_words_from_string(string input) {
             } else {
                 throw invalid_argument("Undefined token encountered: " + word);
             }
-        } else if (isspace(current_char)) {
-            continue;
-        } else {
-            throw std::invalid_argument("Unexpected character in input: " + string(1, current_char));
         }
     }
 
@@ -204,7 +217,6 @@ queue<Word*> convert_infix_to_postfix(vector<Word*> input) {
 
     return postfix;
 }
-
 
 Relation* convert_postfix_to_relation(queue<Word*> input) {
     stack<Relation*> relation_stack;
