@@ -77,3 +77,49 @@ TEST(StringToRelationConvertor, test1)
 
     EXPECT_EQ(output, "(token{letter} . ((token{letter} | token{digit})*))");
 }
+
+TEST(StringToRelationConvertor, test2)
+{
+    map<string, Token*> token_map;
+
+    string input = "a-z | A-Z";
+
+    Relation *relation = get_relation_from_infix(input, token_map);
+
+    string output = get_string_from_relation(relation);
+
+    EXPECT_EQ(output, "(range{97-122} | range{65-90})");
+}
+
+TEST(StringToRelationConvertor, test3)
+{
+    map<string, Token*> token_map;
+
+    token_map["digit"] = new Token(2, "digit");
+
+    string input = "digit+";
+
+    Relation *relation = get_relation_from_infix(input, token_map);
+
+    string output = get_string_from_relation(relation);
+
+    // cout << output << endl;
+    EXPECT_EQ(output, "(token{digit}+)");
+}
+
+TEST(StringToRelationConvertor, test4)
+{
+    map<string, Token*> token_map;
+
+    token_map["letter"] = new Token(1, "letter");
+    token_map["digit"] = new Token(2, "digit");
+
+    string input = " digit+ | digit+ . digits ( x | E digits)";
+
+    Relation *relation = get_relation_from_infix(input, token_map);
+
+    string output = get_string_from_relation(relation);
+
+    cout << output << endl;
+    // EXPECT_EQ(output, "(token{letter} . ((token{letter} | token{digit})*))");
+}
