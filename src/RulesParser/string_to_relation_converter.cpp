@@ -1,39 +1,21 @@
-//
-// Created by pc on 11/29/2024.
-//
 #include "RulesParser.h"
 
-#include <assert.h>
 #include <map>
 #include <stack>
 #include <stdexcept>
+#include <utility>
 
 #include "../dfa_conversion/dfa_convertor.h"
-
-class Token
-{
-public:
-    int index;
-    string token_name;
-
-    static struct token_s NO_TOKEN;
-
-    bool operator<(const Token& other) const {
-        return index < other.index;
-    }
-
-    bool operator==(const Token& other) const {
-        return index == other.index && token_name == other.token_name;
-    }
-};
+#include "string_to_relation_converter.h"
 
 map<string, Token*> token_map;
 
-class Relation
-{
-};
-
 class Word {
+public:
+    enum class Type { Operator, Token, Char };
+
+    virtual ~Word() = default;
+    virtual Type getType() const = 0; // Pure virtual function
 };
 
 class OperatorWord : public Word {
@@ -41,22 +23,23 @@ public:
     char operator_char;
 
     OperatorWord(char operator_char) : operator_char(operator_char) {}
+
+    Type getType() const override {
+        return Type::Operator;
+    }
 };
 
 class TokenWord : public Word {
 public:
     Token* input_token;
 
-    TokenWord(string input) {
+    TokenWord(std::string input) {
         this->input_token = token_map[input];
     }
-};
 
-class RelationWord : public Word {
-public:
-    Relation* relation;
-
-    RelationWord(Relation* relation) : relation(relation) {}
+    Type getType() const override {
+        return Type::Token;
+    }
 };
 
 class CharWord : public Word {
@@ -64,90 +47,240 @@ public:
     int input_char;
 
     CharWord(int input_char) : input_char(input_char) {}
+
+    Type getType() const override {
+        return Type::Char;
+    }
 };
 
-vector<Word> extract_words_from_string(string input)
-{
-    vector<Word> words;
+bool is_left_parenthesis(const Word& word);
+bool is_right_parenthesis(const Word& word);
+int precedence(char operator_char);
+
+vector<Word*> extract_words_from_string(string input);
+vector<Word*> add_concatenation_between_words(vector<Word*> input);
+stack<Word*> convert_infix_to_postfix(vector<Word*> input);
+Relation* convert_postfix_to_relation(stack<Word*> input);
+
+Relation* get_relation_from_infix(string &input, map<string, Token*> input_token_map) {
+    token_map = move(input_token_map);
+
+    vector<Word*> words_before_and = extract_words_from_string(input);
+    vector<Word*> words_after_adding_and = add_concatenation_between_words(words_before_and);
+
+    stack<Word*> postfix = convert_infix_to_postfix(words_after_adding_and);
+    return convert_postfix_to_relation(postfix);
+}
+
+vector<Word*> extract_words_from_string(string input) {
+    vector<Word*> words;
     size_t length = input.length();
-    for (size_t i = 0; i < length; ++i)
-    {
+
+    for (size_t i = 0; i < length; ++i) {
         char current_char = input[i];
 
-        if (current_char == '\\')
-        {
+        if (current_char == '\\') {
             // Handle escaped characters
-            if (i + 1 < length)
-            {
+            if (i + 1 < length) {
                 char next_char = input[i + 1];
-                if (next_char == 'L')
-                {
+                if (next_char == 'L') {
                     // Lambda symbol \L
-                    words.emplace_back(CharWord(EPSLON)); // Assuming '\0' represents Lambda
+                    words.push_back(new CharWord(EPSLON)); // Assuming EPSLON represents Lambda
                     i++; // Skip next character
-                }
-                else
-                {
+                } else {
                     // Any other escaped character
-                    words.emplace_back(CharWord(next_char));
+                    words.push_back(new CharWord(next_char));
                     i++; // Skip next character
                 }
-            }
-            else
-            {
+            } else {
                 throw invalid_argument("Invalid escape sequence at end of string.");
             }
-        }
-        else if (ispunct(current_char))
-        {
-            // Reserved symbols for regular expressions
-            if (string("-|+*()").find(current_char) != string::npos)
-            {
-                words.emplace_back(OperatorWord(current_char));
-            }
-            else
-            {
-                throw invalid_argument("Unexpected punctuation character in input: " + string(1, current_char));
-            }
-        }
-        else if (isalnum(current_char))
-        {
+        } else if (string("-|+*()").find(current_char) != string::npos) {
+            words.push_back(new OperatorWord(current_char));
+        } else if (isalnum(current_char)) {
             // Token word (could span multiple characters)
-            string token_name;
-            while (i < length && isalnum(input[i]))
-            {
-                token_name += input[i++];
+            string word;
+            while (i < length && isalnum(input[i])) {
+                word += input[i++];
             }
             --i; // Adjust for the last increment in the loop
-            if (token_map.find(token_name) != token_map.end())
-            {
-                words.emplace_back(TokenWord(token_name));
+            if (token_map.find(word) != token_map.end()) {
+                words.push_back(new TokenWord(word));
+            } else if (word.size() == 1) {
+                words.push_back(new CharWord(word[0]));
+            } else {
+                throw invalid_argument("Undefined token encountered: " + word);
             }
-            else
-            {
-                // throw invalid_argument("Undefined token encountered: " + token_name);
-            }
-        }
-        else if (isspace(current_char))
-        {
-            // Ignore whitespace
+        } else if (isspace(current_char)) {
             continue;
-        }
-        else
-        {
-            assert(false);
+        } else {
+            throw std::invalid_argument("Unexpected character in input: " + string(1, current_char));
         }
     }
+
     return words;
 }
 
-stack<Word> convert_infix_to_postfix(vector<Word> input) {
-    stack<Word> postfix;
+bool check_word_to_place_and(Word* word, bool is_left) {
+    if (word->getType() != Word::Type::Operator)
+        return true;
+
+    char c = is_left ? '(' : ')';
+
+    OperatorWord *operator_word = static_cast<OperatorWord*>(word);
+    if (operator_word->operator_char == c
+        || operator_word->operator_char == '|'
+        || operator_word->operator_char == '-'
+    ) return false;
+
+    return true;
+}
+
+vector<Word*> add_concatenation_between_words(vector<Word*> input) {
+    vector<Word*> result;
+
+    for (size_t i = 0; i < input.size(); ++i) {
+        result.push_back(input[i]);
+
+        if (i < input.size() - 1 && check_word_to_place_and(input[i], true) && check_word_to_place_and(input[i+1], false)) {
+            result.push_back(new OperatorWord('.'));
+        }
+    }
+
+    return result;
+}
+
+stack<Word*> convert_infix_to_postfix(vector<Word*> input) {
+    stack<Word*> operator_stack; // To hold operators
+    stack<Word*> postfix;       // To build the postfix result
+
+    for (Word* word : input) {
+        if (word->getType() == Word::Type::Token) {
+            // Operand: directly add to postfix
+            postfix.push(word);
+        } else if (word->getType() == Word::Type::Char) {
+            // Operand: directly add to postfix
+            postfix.push(word);
+        } else if (word->getType() == Word::Type::Operator) {
+            auto operator_word = static_cast<OperatorWord*>(word);
+            // Operator: pop higher precedence operators to postfix
+            while (!operator_stack.empty()) {
+                auto top_operator = static_cast<OperatorWord*>(operator_stack.top());
+                if (top_operator && precedence(top_operator->operator_char) >= precedence(operator_word->operator_char)) {
+                    postfix.push(top_operator);
+                    operator_stack.pop();
+                } else {
+                    break;
+                }
+            }
+            operator_stack.push(operator_word);
+        } else if (is_left_parenthesis(*word)) {
+            // Left parenthesis: push to operator stack
+            operator_stack.push(word);
+        } else if (is_right_parenthesis(*word)) {
+            // Right parenthesis: pop until left parenthesis is found
+            while (!operator_stack.empty() && !is_left_parenthesis(*operator_stack.top())) {
+                postfix.push(operator_stack.top());
+                operator_stack.pop();
+            }
+            if (!operator_stack.empty()) {
+                operator_stack.pop(); // Pop the left parenthesis
+            }
+        }
+    }
+
+    // Pop any remaining operators to postfix
+    while (!operator_stack.empty()) {
+        postfix.push(operator_stack.top());
+        operator_stack.pop();
+    }
+
     return postfix;
 }
 
-Relation* convert_postix_to_relation(stack<Word> input) {
-    // last word that comes from the stack is casted to relation word
-    // then we return the relation inside this relation word
-    return NULL;
+Relation* convert_postfix_to_relation(stack<Word*> input) {
+    stack<Relation*> relation_stack;
+
+    while (!input.empty()) {
+        Word* word = input.top();
+        input.pop();
+
+        if (word->getType() == Word::Type::Token) {
+            auto token_word = static_cast<TokenWord*>(word);
+            // Create a base Relation from TokenWord
+            Relation* token_relation = new TokenRelation(token_word->input_token);
+            relation_stack.push(token_relation);
+        } else if (word->getType() == Word::Type::Char) {
+            auto char_word = static_cast<CharWord*>(word);
+            Relation* char_relation = new CharRelation(char_word->input_char);
+            relation_stack.push(char_relation);
+        } else if (word->getType() == Word::Type::Operator) {
+            auto operator_word = static_cast<OperatorWord*>(word);
+            switch (operator_word->operator_char) {
+                case '|': {
+                    if (relation_stack.size() < 2) throw runtime_error("Invalid postfix expression");
+                    Relation* r2 = relation_stack.top(); relation_stack.pop();
+                    Relation* r1 = relation_stack.top(); relation_stack.pop();
+                    relation_stack.push(new OrRelation(r1, r2));
+                    break;
+                }
+                case '.': {
+                    if (relation_stack.size() < 2) throw runtime_error("Invalid postfix expression");
+                    Relation* r2 = relation_stack.top(); relation_stack.pop();
+                    Relation* r1 = relation_stack.top(); relation_stack.pop();
+                    relation_stack.push(new AndRelation(r1, r2));
+                    break;
+                }
+                case '-': {
+                    if (relation_stack.size() < 2) throw runtime_error("Invalid postfix expression");
+                    auto* r2 = static_cast<CharRelation*>(relation_stack.top()); relation_stack.pop();
+                    auto* r1 = static_cast<CharRelation*>(relation_stack.top()); relation_stack.pop();
+
+                    relation_stack.push(new RangeRelation(r1->c, r2->c));
+                    break;
+                }
+                case '*': {
+                    if (relation_stack.empty()) throw runtime_error("Invalid postfix expression");
+                    Relation* r = relation_stack.top(); relation_stack.pop();
+                    relation_stack.push(new ClosureRelation(r, false)); // Non-positive closure
+                    break;
+                }
+                case '+': {
+                    if (relation_stack.empty()) throw runtime_error("Invalid postfix expression");
+                    Relation* r = relation_stack.top(); relation_stack.pop();
+                    relation_stack.push(new ClosureRelation(r, true)); // Positive closure
+                    break;
+                }
+                default:
+                    throw runtime_error("Unknown operator in postfix expression");
+            }
+        }
+    }
+
+    if (relation_stack.size() != 1) {
+        throw runtime_error("Invalid postfix expression");
+    }
+
+    return relation_stack.top();
+}
+
+bool is_left_parenthesis(const Word& word)
+{
+    return word.getType() == Word::Type::Operator && static_cast<const OperatorWord*>(&word)->operator_char == '(';
+}
+
+bool is_right_parenthesis(const Word& word)
+{
+    return word.getType() == Word::Type::Operator && static_cast<const OperatorWord*>(&word)->operator_char == ')';
+}
+
+int precedence(char operator_char)
+{
+    switch (operator_char) {
+        case '-' : return 1;
+        case '*' : case '+': return 2;
+        case '.' : return 3;
+        case '|': return 4;
+        default: return 0; // For other cases
+    }
 }

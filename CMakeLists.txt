@@ -17,6 +17,7 @@ add_executable(compiler_project
         src/RulesParser/RulesParser.h
         src/RulesParser/RulesParser.cpp
         src/RulesParser/string_to_relation_converter.cpp
+        src/RulesParser/string_to_relation_converter.h
 )
 
 # Add a test executable
