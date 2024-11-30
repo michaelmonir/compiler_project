@@ -8,6 +8,8 @@
 #include "../dfa_conversion/dfa_convertor.h"
 #include "string_to_relation_converter.h"
 
+#include <queue>
+
 map<string, Token*> token_map;
 
 class Word {
@@ -53,14 +55,14 @@ public:
     }
 };
 
-bool is_left_parenthesis(const Word& word);
-bool is_right_parenthesis(const Word& word);
+bool is_left_parenthesis(const Word *word);
+bool is_right_parenthesis(const Word *word);
 int precedence(char operator_char);
 
 vector<Word*> extract_words_from_string(string input);
 vector<Word*> add_concatenation_between_words(vector<Word*> input);
-stack<Word*> convert_infix_to_postfix(vector<Word*> input);
-Relation* convert_postfix_to_relation(stack<Word*> input);
+queue<Word*> convert_infix_to_postfix(vector<Word*> input);
+Relation* convert_postfix_to_relation(queue<Word*> input);
 
 Relation* get_relation_from_infix(string &input, map<string, Token*> input_token_map) {
     token_map = move(input_token_map);
@@ -68,7 +70,7 @@ Relation* get_relation_from_infix(string &input, map<string, Token*> input_token
     vector<Word*> words_before_and = extract_words_from_string(input);
     vector<Word*> words_after_adding_and = add_concatenation_between_words(words_before_and);
 
-    stack<Word*> postfix = convert_infix_to_postfix(words_after_adding_and);
+    queue<Word*> postfix = convert_infix_to_postfix(words_after_adding_and);
     return convert_postfix_to_relation(postfix);
 }
 
@@ -131,6 +133,8 @@ bool check_word_to_place_and(Word* word, bool is_left) {
     if (operator_word->operator_char == c
         || operator_word->operator_char == '|'
         || operator_word->operator_char == '-'
+        || (operator_word->operator_char == '*' && !is_left)
+        || (operator_word->operator_char == '+' && !is_left)
     ) return false;
 
     return true;
@@ -150,23 +154,20 @@ vector<Word*> add_concatenation_between_words(vector<Word*> input) {
     return result;
 }
 
-stack<Word*> convert_infix_to_postfix(vector<Word*> input) {
+queue<Word*> convert_infix_to_postfix(vector<Word*> input) {
     stack<Word*> operator_stack; // To hold operators
-    stack<Word*> postfix;       // To build the postfix result
+    queue<Word*> postfix;        // To build the postfix result
 
     for (Word* word : input) {
-        if (word->getType() == Word::Type::Token) {
+        if (word->getType() == Word::Type::Token || word->getType() == Word::Type::Char) {
             // Operand: directly add to postfix
             postfix.push(word);
-        } else if (word->getType() == Word::Type::Char) {
-            // Operand: directly add to postfix
-            postfix.push(word);
-        } else if (word->getType() == Word::Type::Operator) {
+        } else if (word->getType() == Word::Type::Operator && !is_right_parenthesis(word) && !is_left_parenthesis(word)) {
             auto operator_word = static_cast<OperatorWord*>(word);
-            // Operator: pop higher precedence operators to postfix
-            while (!operator_stack.empty()) {
+            // Operator: pop higher or equal precedence operators to postfix
+            while (!operator_stack.empty() && operator_stack.top()->getType() == Word::Type::Operator) {
                 auto top_operator = static_cast<OperatorWord*>(operator_stack.top());
-                if (top_operator && precedence(top_operator->operator_char) >= precedence(operator_word->operator_char)) {
+                if (precedence(top_operator->operator_char) >= precedence(operator_word->operator_char)) {
                     postfix.push(top_operator);
                     operator_stack.pop();
                 } else {
@@ -174,35 +175,42 @@ stack<Word*> convert_infix_to_postfix(vector<Word*> input) {
                 }
             }
             operator_stack.push(operator_word);
-        } else if (is_left_parenthesis(*word)) {
+        } else if (is_left_parenthesis(word)) {
             // Left parenthesis: push to operator stack
             operator_stack.push(word);
-        } else if (is_right_parenthesis(*word)) {
+        } else if (is_right_parenthesis(word)) {
             // Right parenthesis: pop until left parenthesis is found
-            while (!operator_stack.empty() && !is_left_parenthesis(*operator_stack.top())) {
+            while (!operator_stack.empty() && !is_left_parenthesis(operator_stack.top())) {
                 postfix.push(operator_stack.top());
                 operator_stack.pop();
             }
-            if (!operator_stack.empty()) {
+            if (!operator_stack.empty() && is_left_parenthesis(operator_stack.top())) {
                 operator_stack.pop(); // Pop the left parenthesis
+            } else {
+                throw runtime_error("error in converting from infix to postfix");
             }
         }
     }
 
     // Pop any remaining operators to postfix
     while (!operator_stack.empty()) {
-        postfix.push(operator_stack.top());
+        if (operator_stack.top()->getType() == Word::Type::Operator) {
+            postfix.push(operator_stack.top());
+        } else {
+            throw runtime_error("error in converting from infix to postfix");
+        }
         operator_stack.pop();
     }
 
     return postfix;
 }
 
-Relation* convert_postfix_to_relation(stack<Word*> input) {
+
+Relation* convert_postfix_to_relation(queue<Word*> input) {
     stack<Relation*> relation_stack;
 
     while (!input.empty()) {
-        Word* word = input.top();
+        Word* word = input.front();
         input.pop();
 
         if (word->getType() == Word::Type::Token) {
@@ -264,23 +272,25 @@ Relation* convert_postfix_to_relation(stack<Word*> input) {
     return relation_stack.top();
 }
 
-bool is_left_parenthesis(const Word& word)
+bool is_left_parenthesis(const Word *word)
 {
-    return word.getType() == Word::Type::Operator && static_cast<const OperatorWord*>(&word)->operator_char == '(';
+    return word->getType() == Word::Type::Operator && static_cast<const OperatorWord*>(word)->operator_char == '(';
 }
 
-bool is_right_parenthesis(const Word& word)
+bool is_right_parenthesis(const Word *word)
 {
-    return word.getType() == Word::Type::Operator && static_cast<const OperatorWord*>(&word)->operator_char == ')';
+    return word->getType() == Word::Type::Operator && static_cast<const OperatorWord*>(word)->operator_char == ')';
 }
 
 int precedence(char operator_char)
 {
     switch (operator_char) {
-        case '-' : return 1;
-        case '*' : case '+': return 2;
-        case '.' : return 3;
-        case '|': return 4;
-        default: return 0; // For other cases
+        case '(' : case ')' : return 0;
+        case '-' : return 4;
+        case '*' : case '+': return 3;
+        case '.' : return 2;
+        case '|': return 1;
+        default:
+            throw runtime_error("Unknown operator");
     }
 }

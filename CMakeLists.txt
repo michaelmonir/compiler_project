@@ -26,6 +26,7 @@ add_executable(runTests
         test/dfa_conversion/dfa_convertor_test.cpp
         src/dfa_conversion/dfa_convertor.cpp
         src/RulesParser/RulesParser.cpp
+        src/RulesParser/string_to_relation_converter.cpp
 )
 
 # Include directories

@@ -75,5 +75,5 @@ TEST(StringToRelationConvertor, test1)
 
     string output = get_string_from_relation(relation);
 
-    cout << output << endl;
+    EXPECT_EQ(output, "(token{letter} . ((token{letter} | token{digit})*))");
 }
