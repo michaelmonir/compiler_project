@@ -32,10 +32,10 @@ string get_string_from_relation(Relation *relation) {
             break;
         }
 
-        case Relation::RelationType::Token: {
-            TokenRelation *token_relation = dynamic_cast<TokenRelation*>(relation);
-            if (token_relation) {
-                return "token{" + token_relation->token->token_name + "}";
+        case Relation::RelationType::symbol: {
+            symbolRelation *symbol_relation = dynamic_cast<symbolRelation*>(relation);
+            if (symbol_relation) {
+                return "symbol{" + symbol_relation->symbol->symbol_name + "}";
             }
             break;
         }
@@ -64,27 +64,27 @@ string get_string_from_relation(Relation *relation) {
 
 TEST(StringToRelationConvertor, test1)
 {
-    map<string, Token*> token_map;
+    map<string, Symbol*> symbol_map;
 
-    token_map["letter"] = new Token(1, "letter");
-    token_map["digit"] = new Token(2, "digit");
+    symbol_map["letter"] = new Symbol("letter");
+    symbol_map["digit"] = new Symbol("digit");
 
     string input = "letter (letter|digit)*";
 
-    Relation *relation = get_relation_from_infix(input, token_map);
+    Relation *relation = get_relation_from_infix(input, symbol_map);
 
     string output = get_string_from_relation(relation);
 
-    EXPECT_EQ(output, "(token{letter} . ((token{letter} | token{digit})*))");
+    EXPECT_EQ(output, "(symbol{letter} . ((symbol{letter} | symbol{digit})*))");
 }
 
 TEST(StringToRelationConvertor, test2)
 {
-    map<string, Token*> token_map;
+    map<string, Symbol*> symbol_map;
 
     string input = "a-z | A-Z";
 
-    Relation *relation = get_relation_from_infix(input, token_map);
+    Relation *relation = get_relation_from_infix(input, symbol_map);
 
     string output = get_string_from_relation(relation);
 
@@ -93,33 +93,33 @@ TEST(StringToRelationConvertor, test2)
 
 TEST(StringToRelationConvertor, test3)
 {
-    map<string, Token*> token_map;
+    map<string, Symbol*> symbol_map;
 
-    token_map["digit"] = new Token(2, "digit");
+    symbol_map["digit"] = new Symbol("digit");
 
     string input = "digit+";
 
-    Relation *relation = get_relation_from_infix(input, token_map);
+    Relation *relation = get_relation_from_infix(input, symbol_map);
 
     string output = get_string_from_relation(relation);
 
     // cout << output << endl;
-    EXPECT_EQ(output, "(token{digit}+)");
+    EXPECT_EQ(output, "(symbol{digit}+)");
 }
 
 TEST(StringToRelationConvertor, test4)
 {
-    map<string, Token*> token_map;
+    map<string, Symbol*> symbol_map;
 
-    token_map["letter"] = new Token(1, "letter");
-    token_map["digit"] = new Token(2, "digit");
-    token_map["digits"] = new Token(3, "digits");
+    symbol_map["letter"] = new Symbol("letter");
+    symbol_map["digit"] = new Symbol("digit");
+    symbol_map["digits"] = new Symbol("digits");
 
     string input = " digit+ | digit+ . digits ( \\L | E digits)";
 
-    Relation *relation = get_relation_from_infix(input, token_map);
+    Relation *relation = get_relation_from_infix(input, symbol_map);
 
     string output = get_string_from_relation(relation);
 
-    EXPECT_EQ(output, "((token{digit}+) | ((((token{digit}+) . char{46}) . token{digits}) . (char{256} | (char{69} . token{digits}))))");
+    EXPECT_EQ(output, "((symbol{digit}+) | ((((symbol{digit}+) . char{46}) . symbol{digits}) . (char{256} | (char{69} . symbol{digits}))))");
 }

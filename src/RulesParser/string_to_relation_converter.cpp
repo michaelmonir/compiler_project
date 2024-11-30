@@ -11,12 +11,12 @@
 #include <queue>
 #include <set>
 
-map<string, Token*> token_map;
+map<string, Symbol*> symbol_map;
 set<char> special_characters = {'\\', '=', ':', '-', '|', '+', '*', '(', ')'};
 
 class Word {
 public:
-    enum class Type { Operator, Token, Char };
+    enum class Type { Operator, symbol, Char };
 
     virtual ~Word() = default;
     virtual Type getType() const = 0; // Pure virtual function
@@ -33,16 +33,16 @@ public:
     }
 };
 
-class TokenWord : public Word {
+class symbolWord : public Word {
 public:
-    Token* input_token;
+    Symbol* input_symbol;
 
-    TokenWord(std::string input) {
-        this->input_token = token_map[input];
+    symbolWord(std::string input) {
+        this->input_symbol = symbol_map[input];
     }
 
     Type getType() const override {
-        return Type::Token;
+        return Type::symbol;
     }
 };
 
@@ -66,8 +66,8 @@ vector<Word*> add_concatenation_between_words(vector<Word*> input);
 queue<Word*> convert_infix_to_postfix(vector<Word*> input);
 Relation* convert_postfix_to_relation(queue<Word*> input);
 
-Relation* get_relation_from_infix(string &input, map<string, Token*> input_token_map) {
-    token_map = move(input_token_map);
+Relation* get_relation_from_infix(string &input, map<string, Symbol*> input_symbol_map) {
+    symbol_map = move(input_symbol_map);
 
     vector<Word*> words_before_and = extract_words_from_string(input);
     vector<Word*> words_after_adding_and = add_concatenation_between_words(words_before_and);
@@ -123,12 +123,12 @@ vector<Word*> extract_words_from_string(string input) {
                 word += c;
             }
             --i; // Adjust for the last increment in the loop
-            if (token_map.find(word) != token_map.end()) {
-                words.push_back(new TokenWord(word));
+            if (symbol_map.find(word) != symbol_map.end()) {
+                words.push_back(new symbolWord(word));
             } else if (word.size() == 1) {
                 words.push_back(new CharWord(word[0]));
             } else {
-                throw invalid_argument("Undefined token encountered: " + word);
+                throw invalid_argument("Undefined symbol encountered: " + word);
             }
         }
     }
@@ -172,7 +172,7 @@ queue<Word*> convert_infix_to_postfix(vector<Word*> input) {
     queue<Word*> postfix;        // To build the postfix result
 
     for (Word* word : input) {
-        if (word->getType() == Word::Type::Token || word->getType() == Word::Type::Char) {
+        if (word->getType() == Word::Type::symbol || word->getType() == Word::Type::Char) {
             // Operand: directly add to postfix
             postfix.push(word);
         } else if (word->getType() == Word::Type::Operator && !is_right_parenthesis(word) && !is_left_parenthesis(word)) {
@@ -225,11 +225,11 @@ Relation* convert_postfix_to_relation(queue<Word*> input) {
         Word* word = input.front();
         input.pop();
 
-        if (word->getType() == Word::Type::Token) {
-            auto token_word = static_cast<TokenWord*>(word);
-            // Create a base Relation from TokenWord
-            Relation* token_relation = new TokenRelation(token_word->input_token);
-            relation_stack.push(token_relation);
+        if (word->getType() == Word::Type::symbol) {
+            auto symbol_word = static_cast<symbolWord*>(word);
+            // Create a base Relation from symbolWord
+            Relation* symbol_relation = new symbolRelation(symbol_word->input_symbol);
+            relation_stack.push(symbol_relation);
         } else if (word->getType() == Word::Type::Char) {
             auto char_word = static_cast<CharWord*>(word);
             Relation* char_relation = new CharRelation(char_word->input_char);

@@ -9,28 +9,19 @@
 
 using namespace std;
 
-class Token
+class Symbol
 {
 public:
-    int index;
-    string token_name;
+    string symbol_name;
 
-    static struct token_s NO_TOKEN;
+    static struct symbol_s NO_symbol;
 
-    Token(int index, string token_name) : index(index), token_name(token_name) {}
-
-    bool operator<(const Token& other) const {
-        return index < other.index;
-    }
-
-    bool operator==(const Token& other) const {
-        return index == other.index && token_name == other.token_name;
-    }
+    Symbol(string symbol_name) : symbol_name(symbol_name) {}
 };
 
 class Relation {
 public:
-    enum class RelationType { Or, And, Closure, Token, Char, Range };
+    enum class RelationType { Or, And, Closure, symbol, Char, Range };
 
     virtual ~Relation() = default;
     virtual RelationType getType() const = 0; // Pure virtual function
@@ -70,14 +61,14 @@ public:
     }
 };
 
-class TokenRelation : public Relation {
+class symbolRelation : public Relation {
 public:
-    Token *token;
+    Symbol *symbol;
 
-    TokenRelation(Token *token) : token(token) {}
+    symbolRelation(Symbol *symbol) : symbol(symbol) {}
 
     RelationType getType() const override {
-        return RelationType::Token;
+        return RelationType::symbol;
     }
 };
 
@@ -103,6 +94,6 @@ public:
     }
 };
 
-Relation* get_relation_from_infix(string &input, map<string, Token*> input_token_map);
+Relation* get_relation_from_infix(string &input, map<string, Symbol*> input_symbol_map);
 
 #endif //STRING_TO_RELATION_CONVERTER_H
