@@ -21,13 +21,18 @@ enum TokenType {
 };
 
 class RegularDefinition {
+    string symbol_name;
+    Relation* relation;
+public:
+    RegularDefinition(string name, Relation* relation)
+        : symbol_name(name), relation(relation) {};
 };
+
 class RegularExpression {
-private:
+public:
     string symbol_name;
     Relation* relation;
     int priority;
-public:
     RegularExpression(string name, Relation* relation, int priority)
         : symbol_name(name), relation(relation), priority(priority) {};
 };

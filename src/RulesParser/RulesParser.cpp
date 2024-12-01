@@ -14,7 +14,7 @@ map<string, Symbol*> definitions_expressions_map;
 vector<string> keywords;
 vector<RegularExpression*> regularExpressions;
 vector<RegularDefinition*> regularDefinitions;
-vector<string> punctuation;
+vector<string> punctuations;
 
 bool check_regular_definition_and_extract_token(string input, string &token);
 bool check_regular_expression_and_extract_token(string input, string &token);
@@ -23,60 +23,31 @@ void parsePunctuation(string token);
 TokenType getTokenType(string token);
 string get_relation_string_from_line(string line, string symbol_name);
 
-int parseRules(string filepath)
+void first_iteration(string filepath);
+void second_iteration(string filepath);
+
+vector<RegularExpression*> parseRules(string filepath)
 {
-    int line_number = 0;
+    first_iteration(filepath);
+    second_iteration(filepath);
 
-    ifstream file(filepath);
-    if (!file.is_open()) {
-        cout << "Error: could not open file" << endl;
-        return -1;
+    for (string punctuation : punctuations) {
+        RegularExpression *regular_expression
+            = new RegularExpression(punctuation, new StringRelation(punctuation), PUNCTUATION);
+        regularExpressions.push_back(regular_expression);
     }
 
-    string line;
-    while(getline(file,line)) {
-        line_number++;
-        trimString(line);
-        TokenType type = getTokenType(line);
-
-        switch (type) {
-            case KEYWORD:
-                parseKeywords(line);
-                break;
-            case PUNCTUATION:
-                parsePunctuation(line);
-                break;
-            case REGULAR_DEFINITION:
-                string token = "";
-                check_regular_definition_and_extract_token(line, token);
-
-                definitions_expressions_map[token] = new Symbol()
-                break;
-            case REGULAR_EXPRESSION:
-
-                // todo: need to handel errors
-                break;
-            case UNDEFINED:
-                cout << "Error: Undefined token at line " << line_number << endl;
-                return -1;
-        }
-
-        file.close();
-
-        for (const string& keyword: keywords){
-            RegularExpression regularExpression(keyword, keyword, KEYWORD);
-            regularExpressions.push_back(regularExpression);
-        }
-
-        for (const string& punc: punctuation){
-            RegularExpression regularExpression(punc, punc, PUNCTUATION);
-            regularExpressions.push_back(regularExpression);
-        }
-
-        return 0;
+    for (string keyword : keywords) {
+        RegularExpression *regular_expression
+            = new RegularExpression(keyword, new StringRelation(keyword), KEYWORD);
+        regularExpressions.push_back(regular_expression);
     }
 
-    return 0;
+    sort(regularExpressions.begin(), regularExpressions.end(), [](RegularExpression *a, RegularExpression *b) {
+        return a->priority < b->priority;
+    });
+
+    return regularExpressions;
 }
 
 void first_iteration(string filepath)
@@ -136,10 +107,7 @@ void second_iteration(string filepath)
 
     string line;
 
-    int line_number = 0;
-
     while(getline(file,line)) {
-        line_number++;
         trimString(line);
         TokenType type = getTokenType(line);
 
@@ -157,6 +125,9 @@ void second_iteration(string filepath)
                 string relation_string = get_relation_string_from_line(line, symbol_name);
                 Relation *relation = get_relation_from_infix(relation_string, definitions_map);
 
+                RegularDefinition *regular_definition = new RegularDefinition(symbol_name, relation);
+                regularDefinitions.push_back(regular_definition);
+
                 break;
             }
             case REGULAR_EXPRESSION: {
@@ -166,7 +137,7 @@ void second_iteration(string filepath)
                 string relation_string = get_relation_string_from_line(line, symbol_name);
                 Relation *relation = get_relation_from_infix(relation_string, definitions_expressions_map);
 
-                RegularExpression *regular_expression = new RegularExpression(symbol_name, relation, line_number);
+                RegularExpression *regular_expression = new RegularExpression(symbol_name, relation, REGULAR_EXPRESSION);
                 regularExpressions.push_back(regular_expression);
 
                 break;
@@ -237,7 +208,7 @@ void parsePunctuation(string token) {
     removeConsecutiveSpaces(token);
     vector<string> punctuationList = split(token, ' ');
     for (const string& punc: punctuationList)
-        punctuation.push_back(get_string_after_parsing_special_characters(punc));
+        punctuations.push_back(get_string_after_parsing_special_characters(punc));
 }
 
 string get_relation_string_from_line(string line, string symbol_name) {

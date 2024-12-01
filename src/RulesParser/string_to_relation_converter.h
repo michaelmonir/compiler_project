@@ -21,7 +21,7 @@ public:
 
 class Relation {
 public:
-    enum class RelationType { Or, And, Closure, symbol, Char, Range };
+    enum class RelationType { Or, And, Closure, symbol, Char, Range, String };
 
     virtual ~Relation() = default;
     virtual RelationType getType() const = 0; // Pure virtual function
@@ -91,6 +91,17 @@ public:
 
     RelationType getType() const override {
         return RelationType::Range;
+    }
+};
+
+class StringRelation : public Relation {
+public:
+    string s;
+
+    StringRelation(string s) : s(s) {}
+
+    RelationType getType() const override {
+        return RelationType::String;
     }
 };
 
