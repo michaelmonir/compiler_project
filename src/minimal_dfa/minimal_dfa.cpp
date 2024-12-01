@@ -53,10 +53,7 @@ vector<dfa_node_t*> minimize_dfa(vector<dfa_node_t*> dfa_start_nodes) {
     for (auto& [old_index, group] : state_group) {
         dfa_node_t* old_node = all_nodes[old_index];
         dfa_node_t* new_node = minimized_nodes[group];
-
-        if (old_node->token.index < new_node->token.index) {
-            new_node->token = old_node->token;
-        }
+        new_node->token = old_node->token;
 
         for (auto& [input, neighbor] : old_node->neighbors) {
             if (neighbor) {
