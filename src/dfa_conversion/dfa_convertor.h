@@ -24,7 +24,7 @@ typedef struct token_s
     }
 
     bool operator==(const struct token_s& other) const {
-        return index == other.index && token_name == other.token_name;
+        return (index == other.index) && (token_name == other.token_name);
     }
 } token_t;
 
@@ -33,7 +33,7 @@ typedef struct dfa_node_s
     int dfa_node_index;
     // struct dfa_node_s *neighbors[DFA_INPUT_SIZE];
     map<int, struct dfa_node_s*> neighbors;
-    token_t token;
+    token_t token = token_t::NO_TOKEN;
     static int dfa_nodes_counter;
 
     dfa_node_s() : dfa_node_index(dfa_nodes_counter++){ }
