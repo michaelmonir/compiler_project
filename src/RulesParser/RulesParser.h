@@ -37,9 +37,6 @@ public:
         : symbol_name(name), relation(relation), priority(priority) {};
 };
 
-class RulesParser {
-    vector<RegularExpression> regularExpressions;
-    vector<RegularDefinition> regularDefinitions;
-};
+pair<vector<RegularExpression*>, vector<RegularDefinition*>> parseRules(string filepath);
 
 #endif //COMPILER_PROJECT_RULESPARSER_H

@@ -84,7 +84,10 @@ pair<bool, char> get_char_at_pos(string &s, int &pos) {
     }
     if (pos == s.size() - 1) throw invalid_argument("no character after after \\");
     if (s[pos+1] == 'L') return {false, 'L'};
-    return {true, s[++pos]};
+    // return {true, s[++pos]};
+    char res = s[pos+1];
+    pos += 2;
+    return {true, res};
 }
 
 vector<Word*> extract_words_from_string(string input) {
@@ -123,12 +126,11 @@ vector<Word*> extract_words_from_string(string input) {
                 word += c;
             }
             --i; // Adjust for the last increment in the loop
-            if (symbol_map.find(word) != symbol_map.end()) {
+            if (symbol_map.count(word)) {
                 words.push_back(new symbolWord(word));
-            } else if (word.size() == 1) {
-                words.push_back(new CharWord(word[0]));
             } else {
-                throw invalid_argument("Undefined symbol encountered: " + word);
+                for (char c : word)
+                    words.push_back(new CharWord(c));
             }
         }
     }

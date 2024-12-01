@@ -16,17 +16,17 @@ vector<RegularExpression*> regularExpressions;
 vector<RegularDefinition*> regularDefinitions;
 vector<string> punctuations;
 
-bool check_regular_definition_and_extract_token(string input, string &token);
-bool check_regular_expression_and_extract_token(string input, string &token);
+bool check_regular_expression_and_extract_token(string input, string &token, string &relation);
+bool check_regular_definition_and_extract_token(string input, string &token, string &relation);
 void parseKeywords(string token);
 void parsePunctuation(string token);
 TokenType getTokenType(string token);
-string get_relation_string_from_line(string line, string symbol_name);
+string get_relation_string_from_line(string &line, string &symbol_name);
 
 void first_iteration(string filepath);
 void second_iteration(string filepath);
 
-vector<RegularExpression*> parseRules(string filepath)
+pair<vector<RegularExpression*>, vector<RegularDefinition*>> parseRules(string filepath)
 {
     first_iteration(filepath);
     second_iteration(filepath);
@@ -47,7 +47,7 @@ vector<RegularExpression*> parseRules(string filepath)
         return a->priority < b->priority;
     });
 
-    return regularExpressions;
+    return {regularExpressions, regularDefinitions};
 }
 
 void first_iteration(string filepath)
@@ -73,8 +73,8 @@ void first_iteration(string filepath)
                 break;
             }
             case REGULAR_DEFINITION: {
-                string symbol_name;
-                check_regular_definition_and_extract_token(line, symbol_name);
+                string symbol_name, relation_string;
+                check_regular_definition_and_extract_token(line, symbol_name, relation_string);
 
                 Symbol *symbol = new Symbol(symbol_name);
                 definitions_expressions_map[symbol_name] = symbol;
@@ -82,8 +82,8 @@ void first_iteration(string filepath)
                 break;
             }
             case REGULAR_EXPRESSION: {
-                string symbol_name;
-                check_regular_expression_and_extract_token(line, symbol_name);
+                string symbol_name, relation_string;
+                check_regular_expression_and_extract_token(line, symbol_name, relation_string);
 
                 Symbol *symbol = new Symbol(symbol_name);
                 definitions_expressions_map[symbol_name] = symbol;
@@ -119,10 +119,9 @@ void second_iteration(string filepath)
                 break;
             }
             case REGULAR_DEFINITION: {
-                string symbol_name;
-                check_regular_definition_and_extract_token(line, symbol_name);
+                string symbol_name, relation_string;
+                check_regular_definition_and_extract_token(line, symbol_name, relation_string);
 
-                string relation_string = get_relation_string_from_line(line, symbol_name);
                 Relation *relation = get_relation_from_infix(relation_string, definitions_map);
 
                 RegularDefinition *regular_definition = new RegularDefinition(symbol_name, relation);
@@ -131,10 +130,9 @@ void second_iteration(string filepath)
                 break;
             }
             case REGULAR_EXPRESSION: {
-                string symbol_name;
-                check_regular_expression_and_extract_token(line, symbol_name);
+                string symbol_name, relation_string;
+                check_regular_expression_and_extract_token(line, symbol_name, relation_string);
 
-                string relation_string = get_relation_string_from_line(line, symbol_name);
                 Relation *relation = get_relation_from_infix(relation_string, definitions_expressions_map);
 
                 RegularExpression *regular_expression = new RegularExpression(symbol_name, relation, REGULAR_EXPRESSION);
@@ -156,25 +154,33 @@ TokenType getTokenType(string token) {
         return KEYWORD;
     if (token.front() == '[' && token.back() == ']')
         return PUNCTUATION;
-    string temp = "";
-    if (check_regular_definition_and_extract_token(token, temp))
+    string temp11, temp12, temp21, temp22;
+    if (check_regular_definition_and_extract_token(token, temp11, temp12))
         return REGULAR_DEFINITION;
-    if (check_regular_expression_and_extract_token(token, temp))
+    if (check_regular_expression_and_extract_token(token, temp21, temp22))
         return REGULAR_EXPRESSION;
     return UNDEFINED;
 }
 
-bool check_regular_definition_and_extract_token(string input, string &token) {
+bool check_regular_definition_and_extract_token(string input, string &token, string &relation) {
     for (int i = 0; i < input.size(); i++) {
-        if (input[i] == '=' && input[i-1] != '\\') return true;
+        if (input[i] == '=' && input[i-1] != '\\') {
+            relation = get_relation_string_from_line(input, token);
+            trimString(token);
+            return true;
+        }
         token += input[i];
     }
     return false;
 }
 
-bool check_regular_expression_and_extract_token(string input, string &token) {
+bool check_regular_expression_and_extract_token(string input, string &token, string &relation) {
     for (int i = 0; i < input.size(); i++) {
-        if (input[i] == ':' && input[i-1] != '\\') return true;
+        if (input[i] == ':' && input[i-1] != '\\') {
+            relation = get_relation_string_from_line(input, token);
+            trimString(token);
+            return true;
+        }
         token += input[i];
     }
     return false;
@@ -188,6 +194,9 @@ string get_string_after_parsing_special_characters(string input) {
             if (i == input.size() - 1)
                 throw invalid_argument("no character after \\");
             result += input[++i];
+        }
+        else {
+            result += input[i];
         }
     }
     return result;
@@ -211,6 +220,6 @@ void parsePunctuation(string token) {
         punctuations.push_back(get_string_after_parsing_special_characters(punc));
 }
 
-string get_relation_string_from_line(string line, string symbol_name) {
-    return line.substr(symbol_name.length());
+string get_relation_string_from_line(string &line, string &symbol_name) {
+    return line.substr(symbol_name.length() + 1);
 }
