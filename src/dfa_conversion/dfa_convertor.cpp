@@ -154,6 +154,7 @@ void add_node_and_epslon_neighbors_to_map(NfaNode* start_node, map<int, NfaNode*
 
 bool check_start_dfa_node(vector<int> indeces, set<int> start_indeces)
 {
+    // if (indeces.size() != 1) return false;
     for (int index : indeces) 
         if (start_indeces.count(index)) return true;
     return false;
