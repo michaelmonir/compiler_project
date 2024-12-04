@@ -10,9 +10,9 @@ TEST(TRY_DFA_CONVERTOR, sheet_2_q_1_1)
     DfaNode::dfa_nodes_counter = set_dfa_initial_value;
 
     cout << "q_1_1" << endl;
-    NfaNode* a = new NfaNode(1);
-    NfaNode* b = new NfaNode(2);
-    NfaNode* c = new NfaNode(3);
+    NfaNode* a = new NfaNode();
+    NfaNode* b = new NfaNode();
+    NfaNode* c = new NfaNode();
     
     a->neighbors['0'].push_back(b);
     a->neighbors['1'].push_back(a);
@@ -39,10 +39,10 @@ TEST(TRY_DFA_CONVERTOR, sheet_2_q_1_2)
     DfaNode::dfa_nodes_counter = set_dfa_initial_value;
 
     cout << "q_1_2" << endl;
-    NfaNode* a = new NfaNode(1);
-    NfaNode* b = new NfaNode(2);
-    NfaNode* c = new NfaNode(3);
-    NfaNode* d = new NfaNode(4);
+    NfaNode* a = new NfaNode();
+    NfaNode* b = new NfaNode();
+    NfaNode* c = new NfaNode();
+    NfaNode* d = new NfaNode();
     
     a->neighbors['0'].push_back(b);
     a->neighbors['0'].push_back(c);
@@ -73,10 +73,10 @@ TEST(TRY_DFA_CONVERTOR, sheet_2_q_1_3)
     DfaNode::dfa_nodes_counter = set_dfa_initial_value;
 
     cout << "q_1_3" << endl;
-    NfaNode* a = new NfaNode(1);
-    NfaNode* b = new NfaNode(2);
-    NfaNode* c = new NfaNode(3);
-    NfaNode* d = new NfaNode(4);
+    NfaNode* a = new NfaNode();
+    NfaNode* b = new NfaNode();
+    NfaNode* c = new NfaNode();
+    NfaNode* d = new NfaNode();
     
     a->neighbors['0'].push_back(b);
     a->neighbors['0'].push_back(c);
@@ -108,13 +108,13 @@ TEST(TRY_DFA_CONVERTOR, sheet_2_q_3)
     DfaNode::dfa_nodes_counter = set_dfa_initial_value;
 
     cout << "q_3" << endl;
-    NfaNode* a = new NfaNode(1);
-    NfaNode* b = new NfaNode(2);
-    NfaNode* c = new NfaNode(3);
-    NfaNode* d = new NfaNode(4);
-    NfaNode* e = new NfaNode(5);
-    NfaNode* f = new NfaNode(6);
-    NfaNode* g = new NfaNode(7);
+    NfaNode* a = new NfaNode();
+    NfaNode* b = new NfaNode();
+    NfaNode* c = new NfaNode();
+    NfaNode* d = new NfaNode();
+    NfaNode* e = new NfaNode();
+    NfaNode* f = new NfaNode();
+    NfaNode* g = new NfaNode();
     
     a->neighbors[EPSLON].push_back(b);
     a->neighbors[EPSLON].push_back(c);

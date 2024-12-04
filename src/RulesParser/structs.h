@@ -10,6 +10,9 @@
 #define DFA_INPUT_SIZE 256
 #define inf 100000000
 
+#include <map>
+#include <string>
+
 using namespace std;
 
 class Symbol
@@ -142,5 +145,49 @@ public:
         return RelationType::String;
     }
 };
+
+class Token {
+public:
+    int index;
+    string token_name;
+
+    static Token NO_TOKEN;
+
+    Token(int index, string name) : index(index), token_name(name) {}
+
+    bool operator<(const Token& other) const {
+        return index < other.index;
+    }
+
+    bool operator==(const Token& other) const {
+        return index == other.index && token_name == other.token_name;
+    }
+};
+
+class DfaNode {
+public:
+    static int dfa_nodes_counter;
+
+    int dfa_node_index;
+    map<int, DfaNode*> neighbors;
+    Token token;
+
+    DfaNode() : dfa_node_index(dfa_nodes_counter++), token(Token::NO_TOKEN) {}
+};
+
+class NfaNode {
+public:
+    static int nfa_nodes_counter;
+    int nfa_node_index;
+    vector<vector<NfaNode*>> neighbors;
+    Token token;
+    bool is_final;
+
+    NfaNode()
+        : nfa_node_index(nfa_nodes_counter++),
+        neighbors(NFA_INPUT_SIZE),
+        token(Token::NO_TOKEN) {}
+};
+
 
 #endif //STRUCTS_H

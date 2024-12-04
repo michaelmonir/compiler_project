@@ -14,7 +14,10 @@ void lexical_analyze_file(string file_name)
     vector<Rule> rules = parseRules(file_name);
     NFA *nfa = new NFA(rules);
 
-    nfa->get_root();
+    NfaNode *nfa_start_node = nfa->get_root();
+    vector nfa_start_nodes = {nfa_start_node};
+
+    vector<DfaNode*> dfa_start_nodes = dfa_convertor_convert(nfa_start_nodes);
 }
 
 #endif //PROGRAM_H

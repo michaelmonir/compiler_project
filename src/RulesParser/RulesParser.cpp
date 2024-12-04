@@ -9,6 +9,8 @@
 #include "stringUtils.h"
 #include "string_to_relation_converter.h"
 
+Token Token::NO_TOKEN = {inf, "NO TOKEN" };
+
 map<string, Symbol*> definitions_map;
 map<string, Symbol*> definitions_expressions_map;
 vector<string> keywords;

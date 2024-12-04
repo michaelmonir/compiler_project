@@ -11,11 +11,6 @@ using namespace std;
 
 int DfaNode::dfa_nodes_counter = 1;
 
-Token Token::NO_TOKEN = {
-    .index = inf,
-    .token_name = ""
-};
-
 Token get_token_nfa_nodes(vector<NfaNode*> input);
 bool check_start_dfa_node(vector<int> indeces, set<int> start_indeces);
 void add_node_and_epslon_neighbors_to_map(NfaNode* start_node, map<int, NfaNode*> &nodes_map);
