@@ -1,8 +1,14 @@
-#ifndef STRING_TO_RELATION_CONVERTER_H
-#define STRING_TO_RELATION_CONVERTER_H
+//
+// Created by michael on 12/4/24.
+//
 
-#include <map>
-#include <string>
+#ifndef STRUCTS_H
+#define STRUCTS_H
+
+#define EPSLON 256
+#define NFA_INPUT_SIZE 257
+#define DFA_INPUT_SIZE 256
+#define inf 100000000
 
 using namespace std;
 
@@ -11,7 +17,7 @@ class Symbol
 public:
     string symbol_name;
     int index;
-    static struct symbol_s NO_symbol;
+    static Symbol *NO_SYMBOL;
 
     Symbol(int symbol_index, string symbol_name) : index(symbol_index), symbol_name(symbol_name) {}
 };
@@ -34,15 +40,15 @@ public:
     virtual RelationType getType() const = 0; // Pure virtual function
 };
 
-// Base class for a grammar rule
 class Rule
 {
 public:
     Relation *relation;
     Symbol *symbol;
+    int token_index;
 
-    Rule(Symbol *symbol, Relation *rel)
-        : symbol(symbol), relation(rel) {}
+    Rule(Symbol *symbol, Relation *rel, int token_index)
+        : symbol(symbol), relation(rel), token_index(token_index) {}
 };
 
 class OrRelation : public Relation
@@ -137,6 +143,4 @@ public:
     }
 };
 
-Relation *get_relation_from_infix(string &input, map<string, Symbol *> input_symbol_map);
-
-#endif // STRING_TO_RELATION_CONVERTER_H
+#endif //STRUCTS_H

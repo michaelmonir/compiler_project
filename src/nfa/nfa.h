@@ -3,12 +3,14 @@
 
 #include <vector>
 #include <map>
-#include "string_to_relation_converter.h"
+#include "../RulesParser/string_to_relation_converter.h"
+
+using namespace std;
 
 // NFA Node structure
 struct nfa_node
 {
-    std::vector<std::vector<nfa_node *>> neighbors;
+    vector<vector<nfa_node *>> neighbors;
     bool is_final;
 
     nfa_node();
@@ -26,15 +28,15 @@ class NFA
 {
 public:
     nfa_node *root{};
-    std::vector<Rule> rules;
-    std::map<int, start_and_end_nodes> symbol_id_to_start_and_end_node;
-    std::map<int, int> symbol_id_to_rule_index;
+    vector<Rule> rules;
+    map<int, start_and_end_nodes> symbol_id_to_start_and_end_node;
+    map<int, int> symbol_id_to_rule_index;
 
-    explicit NFA(const std::vector<Rule> &rules);
+    explicit NFA(const vector<Rule> &rules);
 
     static start_and_end_nodes apply_char_rule(const CharRelation& relation);
-    static start_and_end_nodes apply_or_rule(const std::vector<nfa_node *>& start_nodes, const std::vector<nfa_node *>& end_nodes);
-    static start_and_end_nodes apply_and_rule(const std::vector<nfa_node *> &start_nodes, const std::vector<nfa_node *> &end_nodes);
+    static start_and_end_nodes apply_or_rule(const vector<nfa_node *>& start_nodes, const vector<nfa_node *>& end_nodes);
+    static start_and_end_nodes apply_and_rule(const vector<nfa_node *> &start_nodes, const vector<nfa_node *> &end_nodes);
     static start_and_end_nodes apply_closure_rule(nfa_node *start_node, nfa_node *end_node);
     start_and_end_nodes apply_symbol_rule(const Symbol *symbol);
     start_and_end_nodes apply_rule(Relation *relation);
