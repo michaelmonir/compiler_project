@@ -20,6 +20,8 @@ add_executable(runTests
     test/dfa_conversion/dfa_convertor_test.cpp
     src/try_gtest/try_gtest.cpp
     src/dfa_conversion/dfa_convertor.cpp
+    src/nfa/nfa.cpp
+        test/nfa/nfa_test.cpp
 )
 
 # Link Google Test to the test executable
@@ -29,6 +31,7 @@ target_include_directories(runTests PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/try_gtest
     ${CMAKE_SOURCE_DIR}/src/dfa_conversion
+        ${CMAKE_SOURCE_DIR}/src/nfa
 )
 
 # Include directories for tests
