@@ -24,6 +24,8 @@ add_executable(compiler_project
         src/nfa/nfa.cpp
         src/minimal_dfa/minimal_dfa.cpp
         src/minimal_dfa/minimal_dfa.h
+        src/lexical_analyzer/lexical_analyzer.h
+        src/lexical_analyzer/lexical_analyzer.cpp
 )
 
 # Add a test executable

@@ -12,8 +12,14 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 using namespace std;
+
+struct LexemeClass {
+    string lexemeClass;
+    string lexeme;
+};
 
 class Symbol
 {

@@ -8,9 +8,9 @@
 #include "dfa_conversion/dfa_convertor.h"
 #include "nfa/nfa.h"
 #include "RulesParser/RulesParser.h"
-#include "minimal_dfa.h"
+#include "minimal_dfa/minimal_dfa.h"
 
-void lexical_analyze_file(string file_name)
+vector<DfaNode*> read_language_input(string file_name)
 {
     vector<Rule> rules = parseRules(file_name);
     NFA *nfa = new NFA(rules);
@@ -21,6 +21,7 @@ void lexical_analyze_file(string file_name)
     vector<DfaNode*> dfa_start_nodes = dfa_convertor_convert(nfa_start_nodes);
     vector<DfaNode*> minimal_dfa_start_nodes = minimize_dfa(dfa_start_nodes);
 
+    return minimal_dfa_start_nodes;
 }
 
 #endif //PROGRAM_H
