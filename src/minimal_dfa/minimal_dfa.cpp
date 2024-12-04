@@ -6,16 +6,16 @@
 
 #include <algorithm>
 
-vector<dfa_node_t *> get_new_start_nodes(
-    vector<dfa_node_t *> nodes,
+vector<DfaNode *> get_new_start_nodes(
+    vector<DfaNode *> nodes,
     map<int, int> state_group,
-    vector<dfa_node_t *> dfa_start_nodes);
-map<int, dfa_node_t *> collect_nodes(vector<dfa_node_t *> dfa_start_nodes);
+    vector<DfaNode *> dfa_start_nodes);
+map<int, DfaNode *> collect_nodes(vector<DfaNode *> dfa_start_nodes);
 
-vector<vector<bool>> get_propagated_distinguishable_table(map<int, dfa_node_t *> all_nodes, map<int, int> index_map);
+vector<vector<bool>> get_propagated_distinguishable_table(map<int, DfaNode *> all_nodes, map<int, int> index_map);
 
-vector<dfa_node_t*> minimize_dfa(vector<dfa_node_t*> dfa_start_nodes) {
-    map<int, dfa_node_t*> all_nodes = collect_nodes(dfa_start_nodes);
+vector<DfaNode*> minimize_dfa(vector<DfaNode*> dfa_start_nodes) {
+    map<int, DfaNode*> all_nodes = collect_nodes(dfa_start_nodes);
 
     // Map indices to compact range
     map<int, int> index_map;
@@ -44,15 +44,15 @@ vector<dfa_node_t*> minimize_dfa(vector<dfa_node_t*> dfa_start_nodes) {
     }
 
     // Create minimized nodes
-    vector<dfa_node_t*> minimized_nodes(group_counter);
+    vector<DfaNode*> minimized_nodes(group_counter);
     for (int i = 0; i < group_counter; i++) {
-        minimized_nodes[i] = new dfa_node_t();
+        minimized_nodes[i] = new DfaNode();
     }
 
     // Set transitions and tokens for minimized DFA
     for (auto& [old_index, group] : state_group) {
-        dfa_node_t* old_node = all_nodes[old_index];
-        dfa_node_t* new_node = minimized_nodes[group];
+        DfaNode* old_node = all_nodes[old_index];
+        DfaNode* new_node = minimized_nodes[group];
         new_node->token = old_node->token;
 
         for (auto& [input, neighbor] : old_node->neighbors) {
@@ -67,11 +67,11 @@ vector<dfa_node_t*> minimize_dfa(vector<dfa_node_t*> dfa_start_nodes) {
 }
 
 
-vector<dfa_node_t*> get_new_start_nodes(vector<dfa_node_t*> minimized_nodes,
+vector<DfaNode*> get_new_start_nodes(vector<DfaNode*> minimized_nodes,
                                         map<int,int> state_group,
-                                        vector<dfa_node_t*> dfa_start_nodes) {
-    vector<dfa_node_t*> new_start_nodes;
-    for (dfa_node_t* node : dfa_start_nodes) {
+                                        vector<DfaNode*> dfa_start_nodes) {
+    vector<DfaNode*> new_start_nodes;
+    for (DfaNode* node : dfa_start_nodes) {
         int group = state_group[node->dfa_node_index];
         if (find(new_start_nodes.begin(),
              new_start_nodes.end(),
@@ -82,16 +82,16 @@ vector<dfa_node_t*> get_new_start_nodes(vector<dfa_node_t*> minimized_nodes,
     return  new_start_nodes;
 }
 
-map<int, dfa_node_t*> collect_nodes(vector<dfa_node_t*> dfa_start_nodes) {
-    map<int, dfa_node_t*> all_nodes;
-    queue<dfa_node_t*> q;
+map<int, DfaNode*> collect_nodes(vector<DfaNode*> dfa_start_nodes) {
+    map<int, DfaNode*> all_nodes;
+    queue<DfaNode*> q;
     set<int> visited;
 
-    for (dfa_node_t* node : dfa_start_nodes)
+    for (DfaNode* node : dfa_start_nodes)
         q.push(node);
 
     while (!q.empty()) {
-        dfa_node_t* node = q.front(); q.pop();
+        DfaNode* node = q.front(); q.pop();
         if (visited.count(node->dfa_node_index)) continue;
 
         visited.insert(node->dfa_node_index);
@@ -108,7 +108,7 @@ map<int, dfa_node_t*> collect_nodes(vector<dfa_node_t*> dfa_start_nodes) {
 
 
 vector<vector<bool>> get_propagated_distinguishable_table(
-    map<int, dfa_node_t*> all_nodes,
+    map<int, DfaNode*> all_nodes,
     map<int, int> index_map)
 {
     int node_count = all_nodes.size();
@@ -136,8 +136,8 @@ vector<vector<bool>> get_propagated_distinguishable_table(
                 if (idx_i >= idx_j || distinguishable[idx_i][idx_j]) continue;
 
                 for (int input = 0; input < DFA_INPUT_SIZE; input++) {
-                    dfa_node_t* neighbor1 = node1->neighbors[input];
-                    dfa_node_t* neighbor2 = node2->neighbors[input];
+                    DfaNode* neighbor1 = node1->neighbors[input];
+                    DfaNode* neighbor2 = node2->neighbors[input];
 
                     if (neighbor1 && neighbor2) {
                         int neighbor_idx1 = index_map[neighbor1->dfa_node_index];

@@ -36,12 +36,12 @@ int set_dfa_initial_value1 = 1;
 
 TEST(MINIMAL_DFA, equivalent_states)
 {
-    dfa_node_t::dfa_nodes_counter = set_dfa_initial_value1;
+    DfaNode::dfa_nodes_counter = set_dfa_initial_value1;
 
     cout << "equivalent_states" << endl;
-    dfa_node_t* a = new dfa_node_t();
-    dfa_node_t* b = new dfa_node_t();
-    dfa_node_t* c = new dfa_node_t();
+    DfaNode* a = new dfa_node_t();
+    DfaNode* b = new dfa_node_t();
+    DfaNode* c = new dfa_node_t();
 
     a->neighbors['0'] = b;
     a->neighbors['1'] = c;
@@ -57,9 +57,9 @@ TEST(MINIMAL_DFA, equivalent_states)
 
     c->token.index = 2; // Same token as state `b`
     c->token.token_name = "accepting state";
-    vector<dfa_node_t*> start_nodes = {a};
+    vector<DfaNode*> start_nodes = {a};
 
-    vector<dfa_node_t*> minimal_dfa = minimize_dfa(start_nodes);
+    vector<DfaNode*> minimal_dfa = minimize_dfa(start_nodes);
 
     print_dfa_nodes(minimal_dfa);
 }

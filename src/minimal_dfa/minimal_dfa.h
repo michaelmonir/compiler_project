@@ -14,6 +14,6 @@
 
 using namespace std;
 
-vector<dfa_node_t*> minimize_dfa(vector<dfa_node_t*> dfa_start_nodes);
+vector<DfaNode*> minimize_dfa(vector<DfaNode*> dfa_start_nodes);
 
 #endif //MINIMAL_DFA_H
