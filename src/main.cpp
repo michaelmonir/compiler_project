@@ -11,13 +11,25 @@
 using namespace std;
 
 int main() {
-
     string file_name = "D:\\college terms\\term 7\\Compiler\\compiler_project\\test.txt";
-    string input_text = "int sum , count , pass , mnt; while (pass !=10)\n"
-                        "{\n"
-                        "pass = pass + 1 ;\n"
+    string input_text = "int main() {\n"
+                        "    float x = 3;\n"
+                        "    int y = 42;\n"
+                        "    boolean flag = true;\n"
+                        "\n"
+                        "    if (x >= y) {\n"
+                        "        x = x + y * 2;\n"
+                        "    } else {\n"
+                        "        y = y - x / 3;\n"
+                        "    }"
+                        "    while (flag) {"
+                        "        x = x - 1;"
+                        "        if (x == 0 || x < 0) {\n"
+                        "            flag = false;\n"
+                        "        }\n"
+                        "    }\n"
                         "}";
-    // string input_text = "p";
+    // string input_text = "";
     vector<DfaNode*> start_nodes = read_language_input(file_name);
     vector<LexemeClass> results = lexicalAnalyzer(input_text, start_nodes);
 

@@ -40,7 +40,6 @@ vector<LexemeClass> lexicalAnalyzer(string input, vector<DfaNode*> minimalDFA) {
             if (state) {
                 lexeme += *current;
                 ++current;
-
             }
         }
         if (lastAcceptingState->token.index != inf) {

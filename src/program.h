@@ -23,7 +23,7 @@ vector<DfaNode*> read_language_input(string file_name)
     vector<DfaNode*> dfa_start_nodes = dfa_convertor_convert(nfa_start_nodes);
     vector<DfaNode*> minimal_dfa_start_nodes = minimize_dfa(dfa_start_nodes);
 
-    return dfa_start_nodes;
+    return minimal_dfa_start_nodes;
 }
 
 #endif //PROGRAM_H
