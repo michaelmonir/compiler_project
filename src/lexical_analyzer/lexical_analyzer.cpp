@@ -28,12 +28,15 @@ vector<LexemeClass> lexicalAnalyzer(string input, vector<DfaNode*> minimalDFA) {
         string lexeme;
         auto lastAcceptingState = state;
         auto lastAcceptingPosition = current;
-        while (state && current != input.end()) {
+        while (state) {
             if (state->token.index != inf) { // Accepting state
                 lastAcceptingState = state;
                 lastAcceptingPosition = current;
             }
             state = state->neighbors[*current];
+            if (current == input.end()) {
+                break;
+            }
             if (state) {
                 lexeme += *current;
                 ++current;
@@ -46,7 +49,10 @@ vector<LexemeClass> lexicalAnalyzer(string input, vector<DfaNode*> minimalDFA) {
                 symbolTable[lexeme] = "id";
             }
             lexemes.push_back({lexemeClass, lexeme});
-            current = lastAcceptingPosition + 1;
+            if (current == input.end()) {
+                return lexemes;
+            }
+            current = lastAcceptingPosition;
         } else {
             panicRecovery(current, input.end());
         }

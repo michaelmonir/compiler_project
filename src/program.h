@@ -18,7 +18,7 @@ vector<DfaNode*> read_language_input(string file_name)
     NfaNode *nfa_start_node = nfa->get_root();
     vector nfa_start_nodes = {nfa_start_node};
     unordered_set<int> visited;
-    nfa_start_node->print(visited);
+    //nfa_start_node->print(visited);
 
     vector<DfaNode*> dfa_start_nodes = dfa_convertor_convert(nfa_start_nodes);
     vector<DfaNode*> minimal_dfa_start_nodes = minimize_dfa(dfa_start_nodes);
