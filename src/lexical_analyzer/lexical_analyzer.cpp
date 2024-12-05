@@ -37,15 +37,16 @@ vector<LexemeClass> lexicalAnalyzer(string input, vector<DfaNode*> minimalDFA) {
             if (state) {
                 lexeme += *current;
                 ++current;
+
             }
         }
         if (lastAcceptingState->token.index != inf) {
             string lexemeClass = lastAcceptingState->token.token_name;
-            if (lexemeClass == "ID" && symbolTable.find(lexeme) == symbolTable.end()) {
-                symbolTable[lexeme] = "ID";
+            if (lexemeClass == "id" && symbolTable.find(lexeme) == symbolTable.end()) {
+                symbolTable[lexeme] = "id";
             }
             lexemes.push_back({lexemeClass, lexeme});
-            current = lastAcceptingPosition;
+            current = lastAcceptingPosition + 1;
         } else {
             panicRecovery(current, input.end());
         }

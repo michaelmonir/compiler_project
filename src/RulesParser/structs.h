@@ -13,6 +13,8 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <unordered_set>
 
 using namespace std;
 
@@ -193,7 +195,45 @@ public:
         : nfa_node_index(nfa_nodes_counter++),
         neighbors(NFA_INPUT_SIZE),
         token(Token::NO_TOKEN) {}
+    void print(unordered_set<int>& visited) const {
+        // Avoid revisiting already printed nodes
+        if (visited.count(nfa_node_index)) {
+            cout << "NfaNode " << nfa_node_index << " (already printed)\n";
+            return;
+        }
+
+        // Mark this node as visited
+        visited.insert(nfa_node_index);
+
+        // Print the node's details
+        cout << "NfaNode {\n";
+        cout << "  nfa_node_index: " << nfa_node_index << ",\n";
+        cout << "  neighbors: {\n";
+
+        for (size_t i = 0; i < neighbors.size(); ++i) {
+            if (!neighbors[i].empty()) {
+                cout << "    [" << i << "]: { ";
+                for (const auto* neighbor : neighbors[i]) {
+                    cout << neighbor->nfa_node_index << " ";
+                }
+                cout << "}\n";
+            }
+        }
+
+        cout << "  },\n";
+        cout << "  token: " << (token == Token::NO_TOKEN ? "NO_TOKEN" : "SOME_TOKEN") << ",\n";
+        cout << "  is_final: " << (is_final ? "true" : "false") << "\n";
+        cout << "}\n";
+
+        // Recursively print neighbors
+        for (const auto& neighborList : neighbors) {
+            for (const auto* neighbor : neighborList) {
+                neighbor->print(visited);
+            }
+        }
+    }
 };
+
 
 
 #endif //STRUCTS_H

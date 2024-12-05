@@ -56,9 +56,10 @@ vector<DfaNode*> dfa_convertor_convert(vector<NfaNode*> start_nodes)
             start_dfa_nodes.push_back(dfa_node);
         }
 
-        cout << "nfa nodes of dfa node #" << dfa_node->dfa_node_index << endl;
-        for (int index : incoming_indeces) cout << index << " ";
-        cout << endl;
+//        cout << "nfa nodes of dfa node #" << dfa_node->dfa_node_index << endl;
+//        for (int index : incoming_indeces)
+//          cout << index << " ";
+//        cout << endl;
 
         // for each input determine the next dfa node
         // if dfa node for same nfa nodes create before, reuse it using the map
@@ -194,14 +195,14 @@ void print_dfa_nodes(vector<DfaNode*> start_nodes)
             if (NULL == node->neighbors[input]) continue;
             char c = input;
 
-            cout << "from: " << node->dfa_node_index << " ";
-            cout << "to: " << node->neighbors[input]->dfa_node_index << " ";
-            cout << "input: " << c << endl;
+//            cout << "from: " << node->dfa_node_index << " ";
+//            cout << "to: " << node->neighbors[input]->dfa_node_index << " ";
+//            cout << "input: " << c << endl;
 
             q.push(node->neighbors[input]);
         }
     }
 
-    for (auto [x, y] : nodes_with_tokens)
-        cout << "node " << x << " token index: " << y << endl;
+//    for (auto [x, y] : nodes_with_tokens)
+//        cout << "node " << x << " token index: " << y << endl;
 }

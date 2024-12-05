@@ -12,8 +12,8 @@ using namespace std;
 
 int main() {
 
-    string file_name = "";
-    string input_text = "";
+    string file_name = "C:\\Users\\pc\\OneDrive-AlexandriaUniversity\\Documents\\GitHub\\compiler_project\\test.txt";
+    string input_text = "AABB";
 
     vector<DfaNode*> start_nodes = read_language_input(file_name);
     vector<LexemeClass> results = lexicalAnalyzer(input_text, start_nodes);

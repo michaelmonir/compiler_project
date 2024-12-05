@@ -50,18 +50,18 @@ vector<Rule> parseRules(string filepath)
     });
 
     vector<Rule> rules;
-
+    int x =0;
     for (int i = 0; i < regularExpressions.size(); i++) {
         RegularExpression *expression = regularExpressions[i];
-        Rule *rule = new Rule(new Symbol(i, expression->symbol_name), expression->relation, i+1);
-
+        Rule *rule = new Rule(new Symbol(x, expression->symbol_name), expression->relation, i+1);
+        x++;
         rules.push_back(*rule);
     }
 
     for (int i = 0; i < regularDefinitions.size(); i++) {
         RegularDefinition *definition = regularDefinitions[i];
-        Rule *rule = new Rule(new Symbol(i, definition->symbol_name), definition->relation, inf);
-
+        Rule *rule = new Rule(new Symbol(x, definition->symbol_name), definition->relation, inf);
+        x++;
         rules.push_back(*rule);
     }
 

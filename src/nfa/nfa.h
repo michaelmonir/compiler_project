@@ -19,14 +19,16 @@ class NFA
 public:
     NfaNode *root{};
     vector<Rule> rules;
-    map<int, start_and_end_nodes> symbol_id_to_start_and_end_node;
-    map<int, int> symbol_id_to_rule_index;
+    map<string, start_and_end_nodes> symbol_id_to_start_and_end_node;
+    map<string, int> symbol_id_to_rule_index;
 
     explicit NFA(const vector<Rule> &rules);
 
     static start_and_end_nodes apply_char_rule(const CharRelation& relation);
     static start_and_end_nodes apply_or_rule(const vector<NfaNode *>& start_nodes, const vector<NfaNode *>& end_nodes);
     static start_and_end_nodes apply_and_rule(const vector<NfaNode *> &start_nodes, const vector<NfaNode *> &end_nodes);
+    static start_and_end_nodes apply_string_rule(const StringRelation &relation);
+    static start_and_end_nodes apply_range_rule(const RangeRelation &relation);
     static start_and_end_nodes apply_closure_rule(NfaNode *start_node, NfaNode *end_node);
     start_and_end_nodes apply_symbol_rule(const Symbol *symbol);
     start_and_end_nodes apply_rule(Relation *relation);
