@@ -242,21 +242,22 @@ Relation* convert_postfix_to_relation(queue<Word*> input) {
             auto operator_word = static_cast<OperatorWord*>(word);
             switch (operator_word->operator_char) {
                 case '|': {
-                    if (relation_stack.size() < 2) throw runtime_error("Invalid postfix expression");
+                    if (relation_stack.size() < 2) throw runtime_error("Invalid postfix expressio1");
                     Relation* r2 = relation_stack.top(); relation_stack.pop();
                     Relation* r1 = relation_stack.top(); relation_stack.pop();
                     relation_stack.push(new OrRelation(r1, r2));
                     break;
                 }
                 case '.': {
-                    if (relation_stack.size() < 2) throw runtime_error("Invalid postfix expression");
+                    if (relation_stack.size() < 2) throw runtime_error("Invalid postfix expression2");
                     Relation* r2 = relation_stack.top(); relation_stack.pop();
                     Relation* r1 = relation_stack.top(); relation_stack.pop();
                     relation_stack.push(new AndRelation(r1, r2));
                     break;
                 }
                 case '-': {
-                    if (relation_stack.size() < 2) throw runtime_error("Invalid postfix expression");
+                    if (relation_stack.size() < 2)
+                        throw runtime_error("Invalid postfix expression3");
                     auto* r2 = static_cast<CharRelation*>(relation_stack.top()); relation_stack.pop();
                     auto* r1 = static_cast<CharRelation*>(relation_stack.top()); relation_stack.pop();
 
@@ -264,13 +265,13 @@ Relation* convert_postfix_to_relation(queue<Word*> input) {
                     break;
                 }
                 case '*': {
-                    if (relation_stack.empty()) throw runtime_error("Invalid postfix expression");
+                    if (relation_stack.empty()) throw runtime_error("Invalid postfix expression4");
                     Relation* r = relation_stack.top(); relation_stack.pop();
                     relation_stack.push(new ClosureRelation(r, false)); // Non-positive closure
                     break;
                 }
                 case '+': {
-                    if (relation_stack.empty()) throw runtime_error("Invalid postfix expression");
+                    if (relation_stack.empty()) throw runtime_error("Invalid postfix expression5");
                     Relation* r = relation_stack.top(); relation_stack.pop();
                     relation_stack.push(new ClosureRelation(r, true)); // Positive closure
                     break;
@@ -282,7 +283,7 @@ Relation* convert_postfix_to_relation(queue<Word*> input) {
     }
 
     if (relation_stack.size() != 1) {
-        throw runtime_error("Invalid postfix expression");
+        throw runtime_error("Invalid postfix expression6");
     }
 
     return relation_stack.top();

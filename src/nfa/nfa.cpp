@@ -196,24 +196,9 @@ start_and_end_nodes NFA::apply_range_rule(const RangeRelation &relation)
 
 start_and_end_nodes NFA::apply_symbol_rule(const Symbol *symbol)
 {
-    if (symbol_id_to_start_and_end_node.find(symbol->symbol_name) == symbol_id_to_start_and_end_node.end())
-    {
         Relation* x = rules[symbol_id_to_rule_index[symbol->symbol_name]].relation;
-        int y = symbol_id_to_rule_index[symbol->symbol_name];
         symbol_id_to_start_and_end_node[symbol->symbol_name] = apply_rule(x);
-    }
-
-    start_and_end_nodes original_start_and_end_node = symbol_id_to_start_and_end_node[symbol->symbol_name];
-    NfaNode *original_node = original_start_and_end_node.start_node;
-
-    // Initialize the new end node pointer
-    NfaNode *new_end_node = nullptr;
-
-    // Start copying from the original start node
-    NfaNode *new_start_node = deep_copy_tree(original_start_and_end_node.start_node, new_end_node);
-
-    // Return the newly created start and end nodes
-    return {new_start_node, new_end_node};
+        return apply_rule(x);
 }
 
 start_and_end_nodes NFA::apply_rule(Relation *relation)
@@ -329,7 +314,7 @@ NfaNode *NFA::deep_copy_tree(NfaNode *original_node, NfaNode *&new_end_node)
     {
         for (auto *neighbor : original_node->neighbors[i])
         {
-            new_node->neighbors[i].push_back(deep_copy_tree(neighbor, new_end_node));
+            new_node->neighbors[i].push_back((neighbor, new_end_node));
         }
     }
 

@@ -36,7 +36,7 @@ vector<DfaNode*> minimize_dfa(vector<DfaNode*> dfa_start_nodes) {
         state_group[old_index] = group_counter;
         for (auto& [other_index, other_node] : all_nodes) {
             if (old_index != other_index &&
-                !distinguishable[index_map[old_index]][index_map[other_index]]) {
+                !distinguishable[min(index_map[old_index], index_map[other_index])][max(index_map[old_index], index_map[other_index])]) {
                 state_group[other_index] = group_counter;
                 }
         }
@@ -136,22 +136,24 @@ vector<vector<bool>> get_propagated_distinguishable_table(
                 if (idx_i >= idx_j || distinguishable[idx_i][idx_j]) continue;
 
                 for (int input = 0; input < DFA_INPUT_SIZE; input++) {
+                    if (!node1->neighbors.count(input) || !node2->neighbors.count(input)) {
+                        continue;
+                    }
                     DfaNode* neighbor1 = node1->neighbors[input];
                     DfaNode* neighbor2 = node2->neighbors[input];
 
-                    if (neighbor1 && neighbor2) {
-                        int neighbor_idx1 = index_map[neighbor1->dfa_node_index];
-                        int neighbor_idx2 = index_map[neighbor2->dfa_node_index];
-                        if (distinguishable[min(neighbor_idx1, neighbor_idx2)]
-                                            [max(neighbor_idx1, neighbor_idx2)]) {
-                            distinguishable[idx_i][idx_j] = true;
-                            changed = true;
-                            break;
-                                            }
-                    }
+                    int neighbor_idx1 = index_map[neighbor1->dfa_node_index];
+                    int neighbor_idx2 = index_map[neighbor2->dfa_node_index];
+                    if (distinguishable[min(neighbor_idx1, neighbor_idx2)]
+                                        [max(neighbor_idx1, neighbor_idx2)]) {
+                        distinguishable[idx_i][idx_j] = true;
+                        changed = true;
+                        break;
+                                        }
                 }
             }
         }
+
     } while (changed);
 
     return distinguishable;
