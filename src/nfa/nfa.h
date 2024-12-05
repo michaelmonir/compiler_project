@@ -29,13 +29,12 @@ public:
     static start_and_end_nodes apply_and_rule(const vector<NfaNode *> &start_nodes, const vector<NfaNode *> &end_nodes);
     static start_and_end_nodes apply_string_rule(const StringRelation &relation);
     static start_and_end_nodes apply_range_rule(const RangeRelation &relation);
-    static start_and_end_nodes apply_closure_rule(NfaNode *start_node, NfaNode *end_node);
+    static start_and_end_nodes apply_closure_rule(NfaNode *start_node, NfaNode *end_node,bool is_postive);
     start_and_end_nodes apply_symbol_rule(const Symbol *symbol);
     start_and_end_nodes apply_rule(Relation *relation);
     void construct_nfa();
 
     NfaNode *get_root() const;
-    NfaNode *deep_copy_tree(NfaNode *original_node, NfaNode *&new_end_node);
 };
 
 #endif // NFA_H

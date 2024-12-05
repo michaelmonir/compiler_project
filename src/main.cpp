@@ -11,7 +11,7 @@
 using namespace std;
 
 int main() {
-    string file_name = "D:\\college terms\\term 7\\Compiler\\compiler_project\\test.txt";
+    string file_name = "/home/ryad/compiler_project/test.txt";
     string input_text = "int main() {\n"
                         "    float x = 3;\n"
                         "    int y = 42;\n"
