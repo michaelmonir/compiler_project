@@ -18,6 +18,7 @@ void panicRecovery(string::iterator &current, string::iterator end) {
 vector<LexemeClass> lexicalAnalyzer(string input, vector<DfaNode*> minimalDFA) {
     vector<LexemeClass> lexemes;
     auto current = input.begin();
+    cout<<"symbol table "<<endl;
     while (current != input.end()) {
         if (isspace(*current)) {
             ++current;
@@ -46,6 +47,7 @@ vector<LexemeClass> lexicalAnalyzer(string input, vector<DfaNode*> minimalDFA) {
             string lexemeClass = lastAcceptingState->token.token_name;
             if (lexemeClass == "id" && symbolTable.find(lexeme) == symbolTable.end()) {
                 symbolTable[lexeme] = "id";
+                cout <<"lexeme: "<< lexeme << ", lexeme Class: id"<< endl;
             }
             lexemes.push_back({lexemeClass, lexeme});
             if (current == input.end()) {

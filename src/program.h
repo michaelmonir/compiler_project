@@ -10,6 +10,7 @@
 #include "RulesParser/RulesParser.h"
 #include "minimal_dfa/minimal_dfa.h"
 
+
 vector<DfaNode*> read_language_input(string file_name)
 {
     vector<Rule> rules = parseRules(file_name);
