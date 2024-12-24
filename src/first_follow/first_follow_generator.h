@@ -17,6 +17,7 @@ private:
     std::string startSymbol;
     std::set<std::string> terminals;
     std::set<std::string> non_terminals;
+    std::set<std::string> visited_non_terminals;
     std::vector<ParseRule> parser_rules;
     std::map<std::string, ParseRule> lhs_to_parse_rule;
     std::map<std::string, std::set<std::string>> first_sets;
