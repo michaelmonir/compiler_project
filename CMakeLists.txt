@@ -26,6 +26,9 @@ add_executable(compiler_project
         src/minimal_dfa/minimal_dfa.h
         src/lexical_analyzer/lexical_analyzer.h
         src/lexical_analyzer/lexical_analyzer.cpp
+        src/Parser/ParcerStream.cpp
+        src/Parser/ParcerStream.h
+        src/Parser/ParseStructs.h
 )
 
 # Add a test executable
