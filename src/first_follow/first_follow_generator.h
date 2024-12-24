@@ -21,7 +21,7 @@ private:
     std::map<std::string, ParseRule> lhs_to_parse_rule;
     std::map<std::string, std::set<std::string>> first_sets;
     std::map<std::string, std::set<std::string>> follow_sets;
-
+    std::map<std::string, std::map<std::string, std::vector<ParseUnit>>> first_sets_with_productions;
     void computeFirst(const ParseRule& rule);
     void computeFollow(const std::string& non_terminal);
 
@@ -38,6 +38,7 @@ public:
 
     const std::map<std::string, std::set<std::string>>& getFirstSets() const;
     const std::map<std::string, std::set<std::string>>& getFollowSets() const;
+    const std::map<std::string, std::map<std::string, std::vector<ParseUnit>>>& getFirstSetsWithProductions() const;
 };
 
 #endif //FIRST_FOLLOW_GENERATOR_H

@@ -29,6 +29,9 @@ add_executable(compiler_project
         src/GrammarParser/GrammarParser.h src/GrammarParser/GrammarParser.cpp
         src/first_follow/first_follow_generator.h
         src/first_follow/first_follow_generator.cpp
+        src/parser_table_generator/parser_table_generator.h
+        src/parser_table_generator/parser_table_generator.cpp
+
 )
 
 
@@ -46,6 +49,8 @@ add_executable(runTests
         src/minimal_dfa/minimal_dfa.cpp
         src/first_follow/first_follow_generator.cpp
         test/first_follow/first_follow_generator_test.cpp
+        src/parser_table_generator/parser_table_generator.cpp
+        test/parser_table/parser_table_test.cpp
 )
 
 # Include directories
