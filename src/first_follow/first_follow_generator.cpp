@@ -48,16 +48,23 @@ const std::map<std::string, std::set<std::string>>& FirstFollowGenerator::getFol
     return follow_sets;
 }
 
+const std::map<std::string, std::map<std::string, std::vector<ParseUnit> > > &FirstFollowGenerator::getFirstSetsWithProductions() const {
+    return first_sets_with_productions;
+}
+
+
 // Helper to compute FIRST sets
 void FirstFollowGenerator::computeFirst(const ParseRule& rule) {
     if (first_sets.find(rule.lhs) != first_sets.end()) {
         return;
     }
     std::set<std::string> tokens;
+    std::map<std::string, std::vector<ParseUnit>> token_to_production;
     for (const auto& productions : rule.or_expressions) {
         for (const auto& production : productions) {
             if (production.type == ParseUnitType::TERMINAL) {
                 tokens.insert(production.name);
+                token_to_production[production.name] = productions;
                 if (production.name != "epslon")
                     break;
             }
@@ -67,6 +74,7 @@ void FirstFollowGenerator::computeFirst(const ParseRule& rule) {
                 computeFirst(lhs_to_parse_rule[production.name]);
                 for (auto& token : first_sets[production.name]) {
                     tokens.insert(token);
+                    token_to_production[token] = productions;
                 }
                 if (tokens.find("epslon") == tokens.end()) {
                     break;
@@ -75,6 +83,7 @@ void FirstFollowGenerator::computeFirst(const ParseRule& rule) {
         }
     }
     first_sets[rule.lhs] = tokens;
+    first_sets_with_productions[rule.lhs] = token_to_production;
 }
 
 // Helper to compute FOLLOW sets
