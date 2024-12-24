@@ -90,10 +90,12 @@ void FirstFollowGenerator::computeFollow(const std::string& non_terminal) {
         for (const auto& productions : rule.or_expressions) {
             for (int i = 0; i < static_cast<int>(productions.size()); ++i) {
                 if (productions[i].name == non_terminal) {
-                    if (i == static_cast<int>(productions.size()) - 1) {
-                        computeFollow(rule.lhs);
-                        for (auto& token : follow_sets[rule.lhs]) {
-                            tokens.insert(token);
+                    if (i == static_cast<int>(productions.size()) - 1 ) {
+                        if (rule.lhs != non_terminal) {
+                            computeFollow(rule.lhs);
+                            for (auto& token : follow_sets[rule.lhs]) {
+                                tokens.insert(token);
+                            }
                         }
                         continue;
                     }
