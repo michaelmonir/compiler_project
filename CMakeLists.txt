@@ -58,6 +58,8 @@ target_include_directories(runTests PRIVATE
     ${CMAKE_SOURCE_DIR}/src/minimal_dfa
 )
 
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static")
+
 # Include directories for tests
 target_include_directories(runTests PRIVATE ${CMAKE_SOURCE_DIR}/src)
 

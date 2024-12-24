@@ -5,77 +5,6 @@
 
 int NfaNode::nfa_nodes_counter = 1;
 
-
-
-//Relation* get_string_from_relation(Relation *relation) {
-//    switch(relation->getType()) {
-//        case Relation::RelationType::Or: {
-//            OrRelation *or_relation = dynamic_cast<OrRelation*>(relation);
-//            if (or_relation) {
-//               or_relation->r1 = get_string_from_relation(or_relation->r1);
-//               or_relation->r2 = get_string_from_relation(or_relation->r2);
-//            }
-//            return or_relation;
-//        }
-//
-//        case Relation::RelationType::And: {
-//            AndRelation *and_relation = dynamic_cast<AndRelation*>(relation);
-//            if (and_relation) {
-//                return "(" + get_string_from_relation(and_relation->r1) + " . " + get_string_from_relation(and_relation->r2) + ")";
-//            }
-//            break;
-//        }
-//
-//        case Relation::RelationType::Closure: {
-//            ClosureRelation *closure_relation = dynamic_cast<ClosureRelation*>(relation);
-//            if (closure_relation) {
-//                string closure_symbol = closure_relation->is_positive ? "+" : "*";
-//                return "(" + get_string_from_relation(closure_relation->relation) + closure_symbol + ")";
-//            }
-//            break;
-//        }
-//
-//        case Relation::RelationType::symbol: {
-//            symbolRelation *symbol_relation = dynamic_cast<symbolRelation*>(relation);
-//            if (symbol_relation) {
-//                return get_string_from_relation(rules[symbol_id_to_rule_index[symbol->index]].relation);
-//            }
-//            break;
-//        }
-//
-//        case Relation::RelationType::Char: {
-//            CharRelation *char_relation = dynamic_cast<CharRelation*>(relation);
-//            if (char_relation) {
-//                return "char{" + to_string(char_relation->c) + "}";
-//            }
-//            break;
-//        }
-//
-//        case Relation::RelationType::Range: {
-//            RangeRelation *range_relation = dynamic_cast<RangeRelation*>(relation);
-//            if (range_relation) {
-//                return "range{" + to_string(range_relation->c1) + "-" + to_string(range_relation->c2) + "}";
-//            }
-//            break;
-//        }
-//
-//        case Relation::RelationType::String: {
-//            StringRelation *string_relation = dynamic_cast<StringRelation*>(relation);
-//            if (string_relation) {
-//                return "string{" + string_relation->s + "}";
-//            }
-//            break;
-//        }
-//
-//        default:
-//            return "Unknown Relation";
-//    }
-//    return "Invalid Relation"; // In case of an invalid type
-//}
-//
-
-
-
 NFA::NFA(const std::vector<Rule> &rules) : rules(rules)
 {
     construct_nfa();
@@ -158,7 +87,7 @@ start_and_end_nodes NFA::apply_and_rule(const std::vector<NfaNode *> &start_node
     return start_and_end_node;
 }
 
-start_and_end_nodes NFA::apply_closure_rule(NfaNode *start_node, NfaNode *end_node)
+start_and_end_nodes NFA::apply_closure_rule(NfaNode *start_node, NfaNode *end_node, bool is_postive)
 {
     auto *starting_node = new NfaNode();
     auto *ending_node = new NfaNode();
@@ -167,10 +96,10 @@ start_and_end_nodes NFA::apply_closure_rule(NfaNode *start_node, NfaNode *end_no
 
     end_node->neighbors[EPSLON].push_back(ending_node);     // epsilon transition
     starting_node->neighbors[EPSLON].push_back(start_node); // epsilon transition
-//    ending_node->neighbors[EPSLON].push_back(end_node);     // epsilon transition
     ending_node->neighbors[EPSLON].push_back(starting_node);      // epsilon transition
-    starting_node->neighbors[EPSLON].push_back(ending_node);      // epsilon transition
-
+    if (!is_postive) {
+        starting_node->neighbors[EPSLON].push_back(ending_node);      // epsilon transition
+    }
     const start_and_end_nodes start_and_end_node = {starting_node, ending_node};
     return start_and_end_node;
 }
@@ -227,7 +156,7 @@ start_and_end_nodes NFA::apply_rule(Relation *relation)
         // Apply closure rule (Kleene star)
         const auto *closure_relation = dynamic_cast<ClosureRelation *>(relation);
         auto [start_node, end_node] = apply_rule(closure_relation->relation);
-        return apply_closure_rule(start_node, end_node);
+        return apply_closure_rule(start_node, end_node, closure_relation->is_positive);
     }
     else
     {
@@ -298,31 +227,4 @@ void NFA::construct_nfa()
 NfaNode *NFA::get_root() const
 {
     return root;
-}
-
-NfaNode *NFA::deep_copy_tree(NfaNode *original_node, NfaNode *&new_end_node)
-{
-    if (original_node == nullptr)
-        return nullptr;
-
-    // Create a new node
-    auto *new_node = new NfaNode();
-    new_node->is_final = original_node->is_final;
-
-    // Copy neighbors recursively
-    for (int i = 0; i < original_node->neighbors.size(); ++i)
-    {
-        for (auto *neighbor : original_node->neighbors[i])
-        {
-            new_node->neighbors[i].push_back((neighbor, new_end_node));
-        }
-    }
-
-    // If this is the original end node, update the new end node pointer
-    if (original_node->is_final)
-    {
-        new_end_node = new_node;
-    }
-
-    return new_node;
 }

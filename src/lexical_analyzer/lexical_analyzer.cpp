@@ -10,7 +10,7 @@ void panicRecovery(string::iterator &current, string::iterator end) {
          << string(current, end) << "\"\n";
 
     // Skip until the next whitespace or end of input
-    while (current != end && !isspace(*current)) {
+    if (current != end ) {
         ++current;
     }
 }
