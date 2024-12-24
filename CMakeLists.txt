@@ -41,8 +41,10 @@ add_executable(runTests
         src/RulesParser/string_to_relation_converter.cpp
         test/program_test.cpp
         test/nfa/nfa_test.cpp
-        src/nfa/nfa.cpp  # Add nfa.cpp here!
+        test/Parser/ParseStreamTest.cpp
+        src/nfa/nfa.cpp
         src/minimal_dfa/minimal_dfa.cpp
+        src/Parser/ParcerStream.cpp
 )
 
 # Include directories

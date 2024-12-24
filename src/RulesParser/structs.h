@@ -162,6 +162,7 @@ public:
     static Token NO_TOKEN;
 
     Token(int index, string name) : index(index), token_name(name) {}
+    Token() : index(-1), token_name("NO_TOKEN") {}  // Default constructor
 
     bool operator<(const Token& other) const {
         return index < other.index;

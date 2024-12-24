@@ -5,6 +5,8 @@
 #include "ParcerStream.h"
 #include <stack>
 
+void bbbb() {}
+
 class Node {
 public:
     ParseUnit unit;
@@ -18,9 +20,15 @@ map<ParseUnit,map<Token, ParseTableItem>> parse_table;
 
 stack<Node*> parse_stack;
 Node *root;
-ParseUnit start_symbol;
 
-void initialize_stack() {
+void initialize_terminal_map_and_parse_table
+    (map<ParseUnit, Token> _terminal_map,
+     map<ParseUnit, map<Token, ParseTableItem>> _parse_table) {
+    terminal_map = _terminal_map;
+    parse_table = _parse_table;
+}
+
+void initialize_stack(ParseUnit start_symbol) {
     root = new Node(start_symbol);
     parse_stack.push(root);
 }

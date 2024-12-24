@@ -20,6 +20,10 @@ class ParseUnit{
 public:
     string name;
     ParseUnitType type;
+
+    bool operator<(const ParseUnit& other) const {
+        return name < other.name;  // Compare by name
+    }
 };
 
 class ParseRule {
