@@ -83,3 +83,31 @@ void stream_process_input_token(Token token) {
         }
     }
 }
+
+
+// void initialize_terminal_map_and_parse_table
+//     (map<ParseUnit, Token> _terminal_map,
+//      map<ParseUnit, map<Token, ParseTableItem>> _parse_table);
+void initialize_terminal_map_and_parse_table_adapt
+    (set<string> terminal_set,
+    std::map<std::string, std::map<std::string, std::pair<bool, std::vector<ParseUnit>>>> old_parse_unit) {
+
+    map<ParseUnit, Token> _terminal_map;
+    map<ParseUnit, map<Token, ParseTableItem>> _parse_table;
+
+    for (auto it = terminal_set.begin(); it != terminal_set.end(); it++) {
+        ParseUnit b(*it, ParseUnitType::TERMINAL);
+        Token t(0, b.name);
+        _terminal_map[b] = t;
+    }
+    for (auto it = old_parse_unit.begin(); it != old_parse_unit.end(); it++) {
+        ParseUnit b(it->first, ParseUnitType::NON_TERMINAL);
+        for (auto it2 = it->second.rbegin(); it2 != it->second.rend(); it2) {
+
+            Token t(0, it->first);
+            _parse_table[b][t] = ParseTableItem(it2->second.first, it2->second.second);
+        }
+    }
+
+    initialize_terminal_map_and_parse_table(terminal_map, _parse_table);
+}

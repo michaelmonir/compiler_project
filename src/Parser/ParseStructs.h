@@ -24,6 +24,14 @@ public:
     bool operator<(const ParseUnit& other) const {
         return name < other.name;  // Compare by name
     }
+
+    ParseUnit() = default;
+
+    ParseUnit(string it, ParseUnitType cond) {
+        name = it;
+        type = cond;
+    }
+
 };
 
 class ParseRule {
@@ -36,6 +44,12 @@ class ParseTableItem {
 public:
     bool isSync;
     vector<ParseUnit> rhs;
+
+    ParseTableItem() = default;
+
+    ParseTableItem(bool first, const pair<bool, vector<ParseUnit>>::second_type & vector) {
+        isSync = first;
+        rhs = vector;    }
 };
 
 #endif //PARSESTRUCTS_H

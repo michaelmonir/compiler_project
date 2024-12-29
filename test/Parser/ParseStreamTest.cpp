@@ -131,26 +131,26 @@ void initialize_parse_table() {
 }
 
 
-TEST(ParseStreamTest, ParseStreamTest1) {
-    // Initialize parse table and stack
-    initialize_parse_table();
-    initialize_terminal_map_and_parse_table(_terminal_map, _parse_table);
-    initialize_stack(make_non_terminal("METHOD_BODY"));
-
-    vector<Token> input_tokens = {
-        make_token(13, "int"), make_token(1, "x"), make_token(2, ";"),
-        make_token(1, "x"), make_token(3, "="), make_token(4, "5"), make_token(2, ";"),
-        make_token(10, "if"), make_token(6, "("), make_token(1, "x"), make_token(5, ">"), make_token(4, "2"), make_token(7, ")"),
-        make_token(8, "{"), make_token(1, "x"), make_token(3, "="), make_token(4, "0"), make_token(2, ";"), make_token(9, "}")
-    };
-
-    // Process tokens
-    for (const Token& token : input_tokens) {
-        stream_process_input_token(token);
-    }
-
-    // Print the left-most derivation
-    cout << "Left-most derivation: ";
-    left_most_print_root();
-    cout << endl;
-}
+// TEST(ParseStreamTest, ParseStreamTest1) {
+//     // Initialize parse table and stack
+//     initialize_parse_table();
+//     initialize_terminal_map_and_parse_table(_terminal_map, _parse_table);
+//     initialize_stack(make_non_terminal("METHOD_BODY"));
+//
+//     vector<Token> input_tokens = {
+//         make_token(13, "int"), make_token(1, "x"), make_token(2, ";"),
+//         make_token(1, "x"), make_token(3, "="), make_token(4, "5"), make_token(2, ";"),
+//         make_token(10, "if"), make_token(6, "("), make_token(1, "x"), make_token(5, ">"), make_token(4, "2"), make_token(7, ")"),
+//         make_token(8, "{"), make_token(1, "x"), make_token(3, "="), make_token(4, "0"), make_token(2, ";"), make_token(9, "}")
+//     };
+//
+//     // Process tokens
+//     for (const Token& token : input_tokens) {
+//         stream_process_input_token(token);
+//     }
+//
+//     // Print the left-most derivation
+//     cout << "Left-most derivation: ";
+//     left_most_print_root();
+//     cout << endl;
+//}

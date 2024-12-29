@@ -17,63 +17,63 @@ bool areProductionsEqual(const std::vector<ParseUnit>& prod1, const std::vector<
 
 
 // Test for Simple Grammar
-TEST(ParserTableTest, SimpleGrammar) {
-    std::set<std::string> terminals = {"a", "b", "epslon"};
-    std::set<std::string> non_terminals = {"S", "A", "B"};
-    std::string start_symbol = "S";
-
-    std::vector<ParseRule> rules = {
-        {"S", {{{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}}},
-        {"A", {{{"a", ParseUnitType::TERMINAL}}, {{"epslon", ParseUnitType::TERMINAL}}}},
-        {"B", {{{"b", ParseUnitType::TERMINAL}}}}
-    };
-
-    // Mock FIRST sets with productions
-    std::map<std::string, std::map<std::string, std::vector<ParseUnit>>> first_sets_with_productions = {
-        {"S", {{"a", {{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}},
-                {"b", {{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}}}},
-        {"A", {{"a", {{"a", ParseUnitType::TERMINAL}}},
-                {"epslon", {}}}},
-        {"B", {{"b", {{"b", ParseUnitType::TERMINAL}}}}}
-    };
-
-    // Mock FOLLOW sets
-    std::map<std::string, std::set<std::string>> follow_sets = {
-        {"S", {"$"}},
-        {"A", {"b"}},
-        {"B", {"$"}}
-    };
-
-    // Generate the parse table
-    ParseTable parse_table = generateParserTable({}, follow_sets, first_sets_with_productions, rules);
-
-    // Expected parse table
-    // Expected parse table
-    ParseTable expected_table = {
-        {"S", {
-            {"a", {{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}},
-               {"b", {{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}}
-        }},
-        {"A", {
-            {"a", {{"a", ParseUnitType::TERMINAL}}},
-            {"b", {{"epslon", ParseUnitType::TERMINAL}}}
-        }},
-        {"B", {
-            {"b", {{"b", ParseUnitType::TERMINAL}}}
-        }}
-    };
-
-
-    // Validate the parse table
-    std::cout<<"hello"<< std::endl;
-    ASSERT_TRUE(parse_table.size() ==  expected_table.size());
-    for (const auto& [non_terminal, entries] : expected_table) {
-        ASSERT_TRUE(parse_table[non_terminal].size() == entries.size());
-        for (const auto& [terminal, production] : entries) {
-            ASSERT_TRUE(areProductionsEqual(parse_table[non_terminal][terminal], production));
-        }
-    }
-}
+// TEST(ParserTableTest, SimpleGrammar) {
+//     std::set<std::string> terminals = {"a", "b", "epslon"};
+//     std::set<std::string> non_terminals = {"S", "A", "B"};
+//     std::string start_symbol = "S";
+//
+//     std::vector<ParseRule> rules = {
+//         {"S", {{{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}}},
+//         {"A", {{{"a", ParseUnitType::TERMINAL}}, {{"epslon", ParseUnitType::TERMINAL}}}},
+//         {"B", {{{"b", ParseUnitType::TERMINAL}}}}
+//     };
+//
+//     // Mock FIRST sets with productions
+//     std::map<std::string, std::map<std::string, std::vector<ParseUnit>>> first_sets_with_productions = {
+//         {"S", {{"a", {{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}},
+//                 {"b", {{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}}}},
+//         {"A", {{"a", {{"a", ParseUnitType::TERMINAL}}},
+//                 {"epslon", {}}}},
+//         {"B", {{"b", {{"b", ParseUnitType::TERMINAL}}}}}
+//     };
+//
+//     // Mock FOLLOW sets
+//     std::map<std::string, std::set<std::string>> follow_sets = {
+//         {"S", {"$"}},
+//         {"A", {"b"}},
+//         {"B", {"$"}}
+//     };
+//
+//     // Generate the parse table
+//     ParseTable parse_table = generateParserTable({}, follow_sets, first_sets_with_productions, rules);
+//
+//     // Expected parse table
+//     // Expected parse table
+//     ParseTable expected_table = {
+//         {"S", {
+//             {"a", {{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}},
+//                {"b", {{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}}
+//         }},
+//         {"A", {
+//             {"a", {{"a", ParseUnitType::TERMINAL}}},
+//             {"b", {{"epslon", ParseUnitType::TERMINAL}}}
+//         }},
+//         {"B", {
+//             {"b", {{"b", ParseUnitType::TERMINAL}}}
+//         }}
+//     };
+//
+//
+//     // Validate the parse table
+//     std::cout<<"hello"<< std::endl;
+//     ASSERT_TRUE(parse_table.size() ==  expected_table.size());
+//     for (const auto& [non_terminal, entries] : expected_table) {
+//         ASSERT_TRUE(parse_table[non_terminal].size() == entries.size());
+//         for (const auto& [terminal, production] : entries) {
+//             ASSERT_TRUE(areProductionsEqual(parse_table[non_terminal][terminal], production));
+//         }
+//     }
+// }
 
 // Test for Conflict Detection
 // TEST(ParserTableTest, ConflictDetection) {

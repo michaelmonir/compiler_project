@@ -29,7 +29,7 @@ struct ParseRule {
 };
 
 // Type alias for the parse table
-using ParseTable = std::map<std::string, std::map<std::string, std::vector<ParseUnit>>>;
+using ParseTable = std::map<std::string, std::map<std::string, std::pair<bool, std::vector<ParseUnit>>>>;
 
 // Functions
 ParseTable generateParserTable(

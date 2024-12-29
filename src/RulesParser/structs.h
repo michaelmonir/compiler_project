@@ -169,10 +169,10 @@ public:
     }
 
     bool operator==(const Token& other) const {
-        return index == other.index && token_name == other.token_name;
+        return token_name == other.token_name;
     }
     bool operator!=(const Token& other) const {
-        return index != other.index || token_name == other.token_name;
+        return  token_name != other.token_name;
     }
 };
 

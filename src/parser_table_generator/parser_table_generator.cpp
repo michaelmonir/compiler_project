@@ -14,12 +14,13 @@ void addToParseTable(
     ParseTable& table,
     const std::string& non_terminal,
     const std::string& terminal,
-    const std::vector<ParseUnit>& production
+    const std::vector<ParseUnit>& production,
+    const bool isSync
 ) {
     if (table[non_terminal].count(terminal)) {
         throw std::runtime_error("Conflict detected in the parse table for non-terminal: " + non_terminal + " with terminal: " + terminal);
     }
-    table[non_terminal][terminal] = production;
+    table[non_terminal][terminal] = {isSync, production};
 }
 
 // Generate LL(1) parse table
@@ -37,14 +38,18 @@ ParseTable generateParserTable(
         // Iterate over the FIRST sets for this non-terminal
         for (const auto& [terminal, production] : first_sets_with_productions.at(non_terminal)) {
             if (terminal != "epslon") {
-                addToParseTable(parse_table, non_terminal, terminal, production);
+                addToParseTable(parse_table, non_terminal, terminal, production, false);
             }
         }
 
         // Handle epsilon productions
         if (first_sets_with_productions.at(non_terminal).count("epslon")) {
             for (const auto& terminal : follow_sets.at(non_terminal)) {
-                addToParseTable(parse_table, non_terminal, terminal, {{"epslon", ParseUnitType::TERMINAL}});
+                addToParseTable(parse_table, non_terminal, terminal, {{"epslon", ParseUnitType::TERMINAL}}, false);
+            }
+        }else {
+            for (const auto& terminal : follow_sets.at(non_terminal)) {
+                addToParseTable(parse_table, non_terminal, terminal, {}, true);
             }
         }
     }
@@ -58,7 +63,7 @@ void printParserTable(const ParseTable& parse_table) {
         std::cout << "Non-terminal: " << non_terminal << "\n";
         for (const auto& [terminal, production] : row) {
             std::cout << "  Terminal: " << terminal << " -> ";
-            for (const auto& unit : production) {
+            for (const auto& unit : production.second) {
                 std::cout << unit.name << " ";
             }
             std::cout << "\n";

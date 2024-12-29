@@ -2,7 +2,7 @@
 // Created by michael on 12/5/24.
 //
 #include "lexical_analyzer.h"
-
+#include "../Parser/ParcerStream.h"
 map<string, string> symbolTable;
 
 void panicRecovery(string::iterator &current, string::iterator end) {
@@ -10,7 +10,7 @@ void panicRecovery(string::iterator &current, string::iterator end) {
          << string(current, end) << "\"\n";
 
     // Skip until the next whitespace or end of input
-    while (current != end && !isspace(*current)) {
+    if(current != end && !isspace(*current)) {
         ++current;
     }
 }
@@ -47,6 +47,7 @@ vector<LexemeClass> lexicalAnalyzer(string input, vector<DfaNode*> minimalDFA) {
             if (lexemeClass == "id" && symbolTable.find(lexeme) == symbolTable.end()) {
                 symbolTable[lexeme] = "id";
             }
+            stream_process_input_token(Token(0,lexemeClass));
             lexemes.push_back({lexemeClass, lexeme});
             if (current == input.end()) {
                 return lexemes;
