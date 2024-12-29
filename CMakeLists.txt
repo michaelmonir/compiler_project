@@ -32,8 +32,10 @@ add_executable(compiler_project
         src/parser_table_generator/parser_table_generator.h
         src/parser_table_generator/parser_table_generator.cpp
 
+        src/Parser/ParcerStream.cpp
+        src/Parser/ParcerStream.h
+        src/Parser/ParseStructs.h
 )
-
 
 # Add a test executable
 add_executable(runTests
@@ -45,8 +47,10 @@ add_executable(runTests
         src/RulesParser/string_to_relation_converter.cpp
         test/program_test.cpp
         test/nfa/nfa_test.cpp
-        src/nfa/nfa.cpp  # Add nfa.cpp here!
+        test/Parser/ParseStreamTest.cpp
+        src/nfa/nfa.cpp
         src/minimal_dfa/minimal_dfa.cpp
+        src/Parser/ParcerStream.cpp
         src/first_follow/first_follow_generator.cpp
         test/first_follow/first_follow_generator_test.cpp
         src/parser_table_generator/parser_table_generator.cpp
