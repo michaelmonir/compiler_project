@@ -9,31 +9,15 @@
 #include <vector>
 #include <map>
 #include <set>
+#include "../GrammarParser/GrammarParser.h"
 
-
-// Enum for parse unit types
-enum class ParseUnitType {
-    TERMINAL,
-    NON_TERMINAL
-};
-
-// Structure representing a parse unit
-struct ParseUnit {
-    std::string name;
-    ParseUnitType type;
-};
-
-// Structure representing a parser rule
-struct ParseRule {
-    std::string lhs; // Non-terminal on the left-hand side
-    std::vector<std::vector<ParseUnit>> or_expressions; // Right-hand side expressions
-};
 
 class FirstFollowGenerator {
 private:
     std::string startSymbol;
     std::set<std::string> terminals;
     std::set<std::string> non_terminals;
+    std::set<std::string> visited_non_terminals;
     std::vector<ParseRule> parser_rules;
     std::map<std::string, ParseRule> lhs_to_parse_rule;
     std::map<std::string, std::set<std::string>> first_sets;

@@ -98,5 +98,58 @@ TEST(FirstFollowGeneratorTest, RecursiveGrammar) {
     for (const auto& [non_terminal, follow_set] : expected_follow) {
         ASSERT_TRUE(areSetsEqual(follow_set, generator.getFollowSets().at(non_terminal)));
     }
+
 }
 
+TEST(FirstFollowGeneratorTest, ProvidedGrammar) {
+    // Define terminals, non-terminals, start symbol, and production rules
+    const std::set<std::string> terminals = {"+", "*", "(", ")", "id", "addop", "mulop", "num", "epslon"};
+    const std::set<std::string> non_terminals = {"E", "E'", "T", "T'", "F"};
+    const std::string start_symbol = "E";
+
+    std::vector<ParseRule> production_rules = {
+        {"E", {{{"T", ParseUnitType::NON_TERMINAL}, {"E'", ParseUnitType::NON_TERMINAL}}}},
+        {"E'", {{{"addop", ParseUnitType::TERMINAL}, {"T", ParseUnitType::NON_TERMINAL}, {"E'", ParseUnitType::NON_TERMINAL}},
+                {{"epslon", ParseUnitType::TERMINAL}}}},
+        {"T", {{{"F", ParseUnitType::NON_TERMINAL}, {"T'", ParseUnitType::NON_TERMINAL}}}},
+        {"T'", {{{"mulop", ParseUnitType::TERMINAL}, {"F", ParseUnitType::NON_TERMINAL}, {"T'", ParseUnitType::NON_TERMINAL}},
+                {{"epslon", ParseUnitType::TERMINAL}}}},
+        {"F", {{{"(", ParseUnitType::TERMINAL}, {"E", ParseUnitType::NON_TERMINAL}, {")", ParseUnitType::TERMINAL}},
+               {{"num", ParseUnitType::TERMINAL}}}}
+    };
+
+    // Create the generator and compute FIRST and FOLLOW sets
+    FirstFollowGenerator generator(start_symbol, terminals, non_terminals, production_rules);
+    generator.generateFirst();
+    generator.generateFollow();
+
+    // Expected FIRST sets
+    std::map<std::string, std::set<std::string>> expected_first = {
+        {"E", {"(", "num"}},
+        {"E'", {"addop", "epslon"}},
+        {"T", {"(", "num"}},
+        {"T'", {"mulop", "epslon"}},
+        {"F", {"(", "num"}}
+    };
+
+    // Expected FOLLOW sets
+    std::map<std::string, std::set<std::string>> expected_follow = {
+        {"E", {")", "$"}},
+        {"E'", {")", "$"}},
+        {"T", {")", "$", "addop"}},
+        {"T'", {")", "$", "addop"}},
+        {"F", {")", "$", "addop", "mulop"}}
+    };
+
+    // Check FIRST sets
+    for (const auto& [non_terminal, first_set] : expected_first) {
+        ASSERT_EQ(first_set, generator.getFirstSets().at(non_terminal))
+            << "Mismatch in FIRST set for non-terminal: " << non_terminal;
+    }
+
+    // // Check FOLLOW sets
+    for (const auto& [non_terminal, follow_set] : expected_follow) {
+        ASSERT_EQ(follow_set, generator.getFollowSets().at(non_terminal))
+            << "Mismatch in FOLLOW set for non-terminal: " << non_terminal;
+    }
+}

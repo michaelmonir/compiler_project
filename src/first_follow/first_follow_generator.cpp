@@ -88,9 +88,10 @@ void FirstFollowGenerator::computeFirst(const ParseRule& rule) {
 
 // Helper to compute FOLLOW sets
 void FirstFollowGenerator::computeFollow(const std::string& non_terminal) {
-    if (follow_sets.find(non_terminal) != follow_sets.end()) {
+    if (follow_sets.find(non_terminal) != follow_sets.end() || visited_non_terminals.find(non_terminal) != visited_non_terminals.end()) {
         return;
     }
+    visited_non_terminals.insert(non_terminal);
     std::set<std::string> tokens;
     if (non_terminal == startSymbol) {
         tokens.insert("$");
@@ -99,7 +100,7 @@ void FirstFollowGenerator::computeFollow(const std::string& non_terminal) {
         for (const auto& productions : rule.or_expressions) {
             for (int i = 0; i < static_cast<int>(productions.size()); ++i) {
                 if (productions[i].name == non_terminal) {
-                    if (i == static_cast<int>(productions.size()) - 1) {
+                    if (i == static_cast<int>(productions.size()) - 1 ) {
                         computeFollow(rule.lhs);
                         for (auto& token : follow_sets[rule.lhs]) {
                             tokens.insert(token);
@@ -122,4 +123,5 @@ void FirstFollowGenerator::computeFollow(const std::string& non_terminal) {
         }
     }
     follow_sets[non_terminal] = tokens;
+    visited_non_terminals.erase(non_terminal);
 }

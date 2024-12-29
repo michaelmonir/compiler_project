@@ -26,12 +26,14 @@ add_executable(compiler_project
         src/minimal_dfa/minimal_dfa.h
         src/lexical_analyzer/lexical_analyzer.h
         src/lexical_analyzer/lexical_analyzer.cpp
+        src/GrammarParser/GrammarParser.h src/GrammarParser/GrammarParser.cpp
         src/first_follow/first_follow_generator.h
         src/first_follow/first_follow_generator.cpp
         src/parser_table_generator/parser_table_generator.h
         src/parser_table_generator/parser_table_generator.cpp
 
 )
+
 
 # Add a test executable
 add_executable(runTests
