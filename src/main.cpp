@@ -57,7 +57,7 @@ int main (){
     // TODO: their is two problems in the following line, the start symbol what should it be?
     //  and the set of terminals and non terminals will be set parseUnit not strings,(i can change the is needed)
     //  this code also need to be tested
-    FirstFollowGenerator generator("text", parser.getTerminals(), parser.getNonTerminals(), parser.getRules());
+    FirstFollowGenerator generator(parser.getStartSymbol(), parser.getTerminals(), parser.getNonTerminals(), parser.getRules());
 
     return 0;
 }

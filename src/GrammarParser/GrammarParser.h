@@ -30,17 +30,18 @@ struct ParseRule {
 
 class GrammarParser {
     private:
-        set<ParseUnit*> nonTerminals;
-        set<ParseUnit*> terminals;
-        vector<ParseRule*> rules;
+        set<string> nonTerminals;
+        set<string> terminals;
+        vector<ParseRule> rules;
         int check_rules(string rule);
         int parseTerminals(string rhs);
         int parseRules(string Terminal, string rhs);
     public:
         GrammarParser();
         void parseGrammar(const string filePath);
-        set<ParseUnit*> getNonTerminals();
-        set<ParseUnit*> getTerminals();
-        vector<ParseRule*> getRules();
+        set<string> getNonTerminals();
+        set<string> getTerminals();
+        vector<ParseRule> getRules();
+        string getStartSymbol();
 };
 #endif //COMPILER_PROJECT_GRAMMARPARSER_H

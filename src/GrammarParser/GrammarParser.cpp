@@ -7,9 +7,9 @@
 #include <fstream>
 #include <iostream>
 
-set<ParseUnit*> nonTerminals;
-set<ParseUnit*> terminals;
-vector<ParseRule*> rules;
+set<string> nonTerminals;
+set<string> terminals;
+vector<ParseRule> rules;
 
 int check_rules(string rule){
     vector<string> parts = split(rule, "::=");
@@ -23,15 +23,12 @@ int check_rules(string rule){
         cout << "Error: Invalid rule format" << endl;
         return -1;
     }
-    ParseUnit* nonTerminal = new ParseUnit();
-    nonTerminal->name = parts[0];
-    nonTerminal->type = ParseUnitType::NON_TERMINAL;
 
-    if (nonTerminals.find(nonTerminal) != nonTerminals.end()){
+    if (nonTerminals.find(parts[0]) != nonTerminals.end()){
         cout << "Error: Duplicate non-terminal" << endl;
         return -1;
     }
-    nonTerminals.insert(nonTerminal);
+    nonTerminals.insert(parts[0]);
     return 0;
 }
 
@@ -59,10 +56,7 @@ int parseTerminals(string rhs){
           rhs.replace(i, 1, " ");
        }
         if (!terminal.empty()){
-            ParseUnit* terminalUnit = new ParseUnit();
-            terminalUnit->name = terminal;
-            terminalUnit->type = ParseUnitType::TERMINAL;
-            terminals.insert(terminalUnit);
+            terminals.insert(terminal);
             terminal.clear();
         }
     }
@@ -91,22 +85,19 @@ int parseRules(string nonTerminal, string rhs){
             }
             ParseUnit* unit = new ParseUnit();
             unit->name = symbol;
-            unit->type = ParseUnitType::TERMINAL;
-            if (terminals.find(unit) != terminals.end()){
-                and_expressions.push_back(*unit);
-            }else{
+            if (terminals.find(symbol) != terminals.end()){
+                unit->type = ParseUnitType::TERMINAL;
+            }else if(nonTerminals.find(symbol) != nonTerminals.end()){
                 unit->type = ParseUnitType::NON_TERMINAL;
-                if (nonTerminals.find(unit) != nonTerminals.end()){
-                    and_expressions.push_back(*unit);
-                }else{
-                    cout << "Error: Undefined terminal or non-terminal" << endl;
-                    return -1;
-                }
+            }else{
+                cout << "Error: Undefined terminal or non-terminal" << endl;
+                return -1;
             }
+            and_expressions.push_back(*unit);
         }
         rule->or_expressions.push_back(and_expressions);
     }
-    rules.push_back(rule);
+    rules.push_back(*rule);
     return 0;
 }
 
@@ -162,14 +153,18 @@ void GrammarParser::parseGrammar(const string filePath){
     file.close();
 }
 
-set<ParseUnit*> GrammarParser::getNonTerminals(){
+set<string> GrammarParser::getNonTerminals(){
     return nonTerminals;
 }
 
-set<ParseUnit*> GrammarParser::getTerminals(){
+set<string> GrammarParser::getTerminals(){
     return terminals;
 }
 
-vector<ParseRule*> GrammarParser::getRules(){
+vector<ParseRule> GrammarParser::getRules(){
     return rules;
+}
+
+string GrammarParser::getStartSymbol(){
+    return *nonTerminals.begin();
 }
