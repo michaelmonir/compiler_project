@@ -42,4 +42,32 @@ vector<string> split(const string& str, char delimiter) {
     return tokens;
 }
 
+vector<std::string> split(const string& str, const string& delimiter) {
+    vector<string> tokens;
+    size_t start = 0, end;
+
+    if (str.empty())
+        return tokens;
+
+    if (str.find(delimiter, start) == string::npos)
+        return {str};
+
+    while ((end = str.find(delimiter, start)) != string::npos) {
+        tokens.push_back(str.substr(start, end - start));
+        start = end + delimiter.length();
+    }
+    tokens.push_back(str.substr(start));
+
+    return tokens;
+}
+
+void replaceAll(string &str, const string& from, const string& to) {
+    if (from.empty()) return;
+    size_t start_pos = 0;
+    while ((start_pos = str.find(from, start_pos)) != string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+}
+
 #endif // STRING_UTILS_H
