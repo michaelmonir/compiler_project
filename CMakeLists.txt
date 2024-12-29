@@ -26,7 +26,11 @@ add_executable(compiler_project
         src/minimal_dfa/minimal_dfa.h
         src/lexical_analyzer/lexical_analyzer.h
         src/lexical_analyzer/lexical_analyzer.cpp
-        src/GrammerParser/GrammarParser.h src/GrammerParser/GrammarParser.cpp)
+        src/GrammarParser/GrammarParser.h src/GrammarParser/GrammarParser.cpp
+        src/first_follow/first_follow_generator.h
+        src/first_follow/first_follow_generator.cpp
+)
+
 
 # Add a test executable
 add_executable(runTests
@@ -40,6 +44,8 @@ add_executable(runTests
         test/nfa/nfa_test.cpp
         src/nfa/nfa.cpp  # Add nfa.cpp here!
         src/minimal_dfa/minimal_dfa.cpp
+        src/first_follow/first_follow_generator.cpp
+        test/first_follow/first_follow_generator_test.cpp
 )
 
 # Include directories

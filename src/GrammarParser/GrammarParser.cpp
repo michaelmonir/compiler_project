@@ -7,8 +7,8 @@
 #include <fstream>
 #include <iostream>
 
-unordered_set<ParseUnit*> nonTerminals;
-unordered_set<ParseUnit*> terminals;
+set<ParseUnit*> nonTerminals;
+set<ParseUnit*> terminals;
 vector<ParseRule*> rules;
 
 int check_rules(string rule){
@@ -162,11 +162,11 @@ void GrammarParser::parseGrammar(const string filePath){
     file.close();
 }
 
-unordered_set<ParseUnit*> GrammarParser::getNonTerminals(){
+set<ParseUnit*> GrammarParser::getNonTerminals(){
     return nonTerminals;
 }
 
-unordered_set<ParseUnit*> GrammarParser::getTerminals(){
+set<ParseUnit*> GrammarParser::getTerminals(){
     return terminals;
 }
 

@@ -7,7 +7,7 @@
 
 #include <string>
 #include <vector>
-#include <unordered_set>
+#include <set>
 
 using  namespace std;
 // Enumeration for parse_unit_type
@@ -30,8 +30,8 @@ struct ParseRule {
 
 class GrammarParser {
     private:
-        unordered_set<ParseUnit*> nonTerminals;
-        unordered_set<ParseUnit*> terminals;
+        set<ParseUnit*> nonTerminals;
+        set<ParseUnit*> terminals;
         vector<ParseRule*> rules;
         int check_rules(string rule);
         int parseTerminals(string rhs);
@@ -39,8 +39,8 @@ class GrammarParser {
     public:
         GrammarParser();
         void parseGrammar(const string filePath);
-        unordered_set<ParseUnit*> getNonTerminals();
-        unordered_set<ParseUnit*> getTerminals();
+        set<ParseUnit*> getNonTerminals();
+        set<ParseUnit*> getTerminals();
         vector<ParseRule*> getRules();
 };
 #endif //COMPILER_PROJECT_GRAMMARPARSER_H
