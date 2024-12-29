@@ -9,24 +9,7 @@
 #include <vector>
 #include <map>
 #include <set>
-
-// Enum for parse unit types
-enum class ParseUnitType {
-    TERMINAL,
-    NON_TERMINAL
-};
-
-// Structure representing a parse unit
-struct ParseUnit {
-    std::string name;
-    ParseUnitType type;
-};
-
-// Structure representing a parser rule
-struct ParseRule {
-    std::string lhs; // Non-terminal on the left-hand side
-    std::vector<std::vector<ParseUnit>> or_expressions; // Right-hand side expressions
-};
+#include "../GrammarParser/GrammarParser.h"
 
 // Type alias for the parse table
 using ParseTable = std::map<std::string, std::map<std::string, std::pair<bool, std::vector<ParseUnit>>>>;

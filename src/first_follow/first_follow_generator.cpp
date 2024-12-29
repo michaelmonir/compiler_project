@@ -63,16 +63,16 @@ void FirstFollowGenerator::computeFirst(const ParseRule& rule) {
     for (const auto& productions : rule.or_expressions) {
         for (const auto& production : productions) {
             if (production.type == ParseUnitType::TERMINAL) {
-                tokens.insert(production.name);
-                token_to_production[production.name] = productions;
-                if (production.name != "epslon")
+                tokens.insert(production.lhs);
+                token_to_production[production.lhs] = productions;
+                if (production.lhs != "epslon")
                     break;
             }
             else {
-                if (production.name == rule.lhs)
+                if (production.lhs == rule.lhs)
                     break;
-                computeFirst(lhs_to_parse_rule[production.name]);
-                for (auto& token : first_sets[production.name]) {
+                computeFirst(lhs_to_parse_rule[production.lhs]);
+                for (auto& token : first_sets[production.lhs]) {
                     tokens.insert(token);
                     token_to_production[token] = productions;
                 }
@@ -99,7 +99,7 @@ void FirstFollowGenerator::computeFollow(const std::string& non_terminal) {
     for (const auto& rule : parser_rules) {
         for (const auto& productions : rule.or_expressions) {
             for (int i = 0; i < static_cast<int>(productions.size()); ++i) {
-                if (productions[i].name == non_terminal) {
+                if (productions[i].lhs == non_terminal) {
                     if (i == static_cast<int>(productions.size()) - 1 ) {
                         computeFollow(rule.lhs);
                         for (auto& token : follow_sets[rule.lhs]) {
@@ -107,13 +107,13 @@ void FirstFollowGenerator::computeFollow(const std::string& non_terminal) {
                         }
                         continue;
                     }
-                    for (auto& token : first_sets[productions[i+1].name]) {
+                    for (auto& token : first_sets[productions[i+1].lhs]) {
                         if (token != "epslon") {
                             tokens.insert(token);
                         }
                         else {
-                             computeFollow(productions[i+1].name);
-                             for (auto& token : follow_sets[productions[i+1].name]) {
+                             computeFollow(productions[i+1].lhs);
+                             for (auto& token : follow_sets[productions[i+1].lhs]) {
                                  tokens.insert(token);
                              }
                         }

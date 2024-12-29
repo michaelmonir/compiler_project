@@ -18,14 +18,14 @@ using namespace std;
 
 void phase2();
 
-int main(int argc, char* argv[]) {
-    if (argc < 3) {
-        cerr << "Usage: " << argv[0] << " <file_name> <input_file_path>" << endl;
-        return 1;
-    }
+int main() {
+//    if (argc < 3) {
+//        cerr << "Usage: " << argv[0] << " <file_name> <input_file_path>" << endl;
+//        return 1;
+//    }
 
-    string file_name = argv[1];      // First argument: DFA definition file
-    string input_file_path = argv[2]; // Second argument: input file path
+    string file_name = "C:\\Users\\pc\\OneDrive-AlexandriaUniversity\\Documents\\GitHub\\compiler_project\\test.txt";      // First argument: DFA definition file
+    string input_file_path = "C:\\Users\\pc\\OneDrive-AlexandriaUniversity\\Documents\\GitHub\\compiler_project\\input.txt"; // Second argument: input file path
 
     // Read the DFA language input
     vector<DfaNode*> start_nodes = read_language_input(file_name);
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
 }
 
 void phase2(){
-    string file_name = "rules.txt";
+    string file_name = "C:\\Users\\pc\\OneDrive-AlexandriaUniversity\\Documents\\GitHub\\compiler_project\\rules.txt";
     GrammarParser parser;
     parser.parseGrammar(file_name);
 
@@ -64,10 +64,13 @@ void phase2(){
     //  and the set of terminals and non terminals will be set parseUnit not strings,(i can change the is needed)
     //  this code also need to be tested
     FirstFollowGenerator generator(parser.getStartSymbol(), parser.getTerminals(), parser.getNonTerminals(), parser.getRules());
-    ParseTable parse_table = generateParserTable(generator.getFirstSets(), generator.getFollowSets(), generator.getFirstSetsWithProductions());
+    ParseTable parse_table = generateParserTable(generator.getFirstSets(), generator.getFollowSets(), generator.getFirstSetsWithProductions(), parser.getRules());
     set<string> terminal_sets = parser.getTerminals();
 
     initialize_terminal_map_and_parse_table_adapt(terminal_sets, parse_table);
-    initialize_stack(parser.getStartSymbol());
+    ParseUnit unit;
+    unit.lhs = parser.getStartSymbol();
+    unit.type = ParseUnitType::NON_TERMINAL;
+    initialize_stack(unit);
 
 }

@@ -47,7 +47,7 @@ vector<LexemeClass> lexicalAnalyzer(string input, vector<DfaNode*> minimalDFA) {
             if (lexemeClass == "id" && symbolTable.find(lexeme) == symbolTable.end()) {
                 symbolTable[lexeme] = "id";
             }
-            stream_process_input_token(Token(0,lexemeClass));
+//            stream_process_input_token(Token(0,lexemeClass));
             lexemes.push_back({lexemeClass, lexeme});
             if (current == input.end()) {
                 return lexemes;

@@ -11,8 +11,8 @@ set<string> nonTerminals;
 set<string> terminals;
 vector<ParseRule> rules;
 
-int check_rules(string rule){
-    vector<string> parts = split(rule, "::=");
+int GrammarParser::check_rules(string rule){
+    vector<string> parts = split(rule, "=");
     if (parts.size() != 2) {
         cout << "Error: Invalid rule format" << endl;
         return -1;
@@ -32,7 +32,7 @@ int check_rules(string rule){
     return 0;
 }
 
-int parseTerminals(string rhs){
+int GrammarParser::parseTerminals(string& rhs){
     string terminal = "";
     for (int i = 0; i < rhs.length(); i++) {
        char c = rhs[i];
@@ -63,7 +63,7 @@ int parseTerminals(string rhs){
     return 0;
 }
 
-int parseRules(string nonTerminal, string rhs){
+int GrammarParser::parseRules(string nonTerminal, string rhs){
     ParseRule* rule = new ParseRule();
     rule->lhs = nonTerminal;
     replaceAll(rhs, "\\|", "\\@");
@@ -83,17 +83,17 @@ int parseRules(string nonTerminal, string rhs){
             if(symbol[0] == '\\'){
                 symbol.erase(0, 1);
             }
-            ParseUnit* unit = new ParseUnit();
-            unit->name = symbol;
+            ParseUnit unit;
+            unit.lhs = symbol;
             if (terminals.find(symbol) != terminals.end()){
-                unit->type = ParseUnitType::TERMINAL;
+                unit.type = ParseUnitType::TERMINAL;
             }else if(nonTerminals.find(symbol) != nonTerminals.end()){
-                unit->type = ParseUnitType::NON_TERMINAL;
+                unit.type = ParseUnitType::NON_TERMINAL;
             }else{
                 cout << "Error: Undefined terminal or non-terminal" << endl;
                 return -1;
             }
-            and_expressions.push_back(*unit);
+            and_expressions.push_back(unit);
         }
         rule->or_expressions.push_back(and_expressions);
     }
@@ -108,7 +108,7 @@ void GrammarParser::parseGrammar(const string filePath){
         return;
     }
     string line;
-    while(getline(file,line, '#')) {
+    while(getline(file,line)) {
         trimString(line);
         if (line.empty()) {
             continue;
@@ -126,12 +126,12 @@ void GrammarParser::parseGrammar(const string filePath){
         cout << "Error: File not found" << endl;
         return;
     }
-    while (getline(file, line, '#')) {
+    while (getline(file, line)) {
         trimString(line);
         if (line.empty()) {
             continue;
         }
-        vector<string> parts = split(line, "::=");
+        vector<string> parts = split(line, "=");
         string lhs = parts[0];
         string rhs = parts[1];
         trimString(lhs);

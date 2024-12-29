@@ -18,17 +18,17 @@ enum ParseUnitType {
 
 class ParseUnit{
 public:
-    string name;
+    string lhs;
     ParseUnitType type;
 
     bool operator<(const ParseUnit& other) const {
-        return name < other.name;  // Compare by name
+        return lhs < other.lhs;  // Compare by name
     }
 
     ParseUnit() = default;
 
     ParseUnit(string it, ParseUnitType cond) {
-        name = it;
+        lhs = it;
         type = cond;
     }
 
@@ -36,7 +36,7 @@ public:
 
 class ParseRule {
 public:
-    ParseUnit lhs;
+    string lhs;
     vector<vector<ParseUnit>> or_expressions;
 };
 

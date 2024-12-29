@@ -10,7 +10,7 @@ bool areProductionsEqual(const std::vector<ParseUnit>& prod1, const std::vector<
     if (prod1.size() != prod2.size()) return false;
 
     for (size_t i = 0; i < prod1.size(); ++i) {
-        if (!(prod1[i].name == prod2[i].name)) return false;
+        if (!(prod1[i].lhs == prod2[i].lhs)) return false;
     }
     return true;
 }

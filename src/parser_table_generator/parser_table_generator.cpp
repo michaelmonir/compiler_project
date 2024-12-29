@@ -64,7 +64,7 @@ void printParserTable(const ParseTable& parse_table) {
         for (const auto& [terminal, production] : row) {
             std::cout << "  Terminal: " << terminal << " -> ";
             for (const auto& unit : production.second) {
-                std::cout << unit.name << " ";
+                std::cout << unit.lhs << " ";
             }
             std::cout << "\n";
         }

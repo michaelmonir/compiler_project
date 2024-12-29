@@ -97,7 +97,7 @@ void initialize_terminal_map_and_parse_table_adapt
 
     for (auto it = terminal_set.begin(); it != terminal_set.end(); it++) {
         ParseUnit b(*it, ParseUnitType::TERMINAL);
-        Token t(0, b.name);
+        Token t(0, b.lhs);
         _terminal_map[b] = t;
     }
     for (auto it = old_parse_unit.begin(); it != old_parse_unit.end(); it++) {

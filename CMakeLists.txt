@@ -35,7 +35,8 @@ add_executable(compiler_project
         src/Parser/ParcerStream.cpp
         src/Parser/ParcerStream.h
         src/Parser/ParseStructs.h
-)
+        src/RulesParser/stringUtils.h
+        src/RulesParser/stringUtils.cpp)
 
 # Add a test executable
 add_executable(runTests
@@ -55,6 +56,7 @@ add_executable(runTests
         test/first_follow/first_follow_generator_test.cpp
         src/parser_table_generator/parser_table_generator.cpp
         test/parser_table/parser_table_test.cpp
+        src/RulesParser/stringUtils.h
 )
 
 # Include directories
