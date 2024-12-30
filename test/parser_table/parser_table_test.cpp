@@ -18,13 +18,13 @@ bool areProductionsEqual(const std::vector<ParseUnit>& prod1, const std::vector<
 
 // Test for Simple Grammar
 // TEST(ParserTableTest, SimpleGrammar) {
-//     std::set<std::string> terminals = {"a", "b", "epslon"};
+//     std::set<std::string> terminals = {"a", "b", "\\L"};
 //     std::set<std::string> non_terminals = {"S", "A", "B"};
 //     std::string start_symbol = "S";
 //
 //     std::vector<ParseRule> rules = {
 //         {"S", {{{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}}},
-//         {"A", {{{"a", ParseUnitType::TERMINAL}}, {{"epslon", ParseUnitType::TERMINAL}}}},
+//         {"A", {{{"a", ParseUnitType::TERMINAL}}, {{"\\L", ParseUnitType::TERMINAL}}}},
 //         {"B", {{{"b", ParseUnitType::TERMINAL}}}}
 //     };
 //
@@ -33,7 +33,7 @@ bool areProductionsEqual(const std::vector<ParseUnit>& prod1, const std::vector<
 //         {"S", {{"a", {{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}},
 //                 {"b", {{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}}}},
 //         {"A", {{"a", {{"a", ParseUnitType::TERMINAL}}},
-//                 {"epslon", {}}}},
+//                 {"\\L", {}}}},
 //         {"B", {{"b", {{"b", ParseUnitType::TERMINAL}}}}}
 //     };
 //
@@ -56,7 +56,7 @@ bool areProductionsEqual(const std::vector<ParseUnit>& prod1, const std::vector<
 //         }},
 //         {"A", {
 //             {"a", {{"a", ParseUnitType::TERMINAL}}},
-//             {"b", {{"epslon", ParseUnitType::TERMINAL}}}
+//             {"b", {{"\\L", ParseUnitType::TERMINAL}}}
 //         }},
 //         {"B", {
 //             {"b", {{"b", ParseUnitType::TERMINAL}}}
@@ -120,11 +120,11 @@ bool areProductionsEqual(const std::vector<ParseUnit>& prod1, const std::vector<
 //         {"E", {{"(", {{"T", ParseUnitType::NON_TERMINAL}, {"E'", ParseUnitType::NON_TERMINAL}}},
 //                 {"id", {{"T", ParseUnitType::NON_TERMINAL}, {"E'", ParseUnitType::NON_TERMINAL}}}}},
 //         {"E'", {{"+", {{"+", ParseUnitType::TERMINAL}, {"T", ParseUnitType::NON_TERMINAL}, {"E'", ParseUnitType::NON_TERMINAL}}},
-//                  {"epslon", {}}}},
+//                  {"\\L", {}}}},
 //         {"T", {{"(", {{"F", ParseUnitType::NON_TERMINAL}, {"T'", ParseUnitType::NON_TERMINAL}}},
 //                 {"id", {{"F", ParseUnitType::NON_TERMINAL}, {"T'", ParseUnitType::NON_TERMINAL}}}}},
 //         {"T'", {{"*", {{"*", ParseUnitType::TERMINAL}, {"F", ParseUnitType::NON_TERMINAL}, {"T'", ParseUnitType::NON_TERMINAL}}},
-//                  {"epslon", {}}}},
+//                  {"\\L", {}}}},
 //         {"F", {{"(", {{"(", ParseUnitType::TERMINAL}, {"E", ParseUnitType::NON_TERMINAL}, {")", ParseUnitType::TERMINAL}}},
 //                 {"id", {{"id", ParseUnitType::TERMINAL}}}}}
 //     };

@@ -17,9 +17,9 @@ void addToParseTable(
     const std::vector<ParseUnit>& production,
     const bool isSync
 ) {
-    if (table[non_terminal].count(terminal)) {
-        throw std::runtime_error("Conflict detected in the parse table for non-terminal: " + non_terminal + " with terminal: " + terminal);
-    }
+    // if (table[non_terminal].count(terminal)) {
+    //     throw std::runtime_error("Conflict detected in the parse table for non-terminal: " + non_terminal + " with terminal: " + terminal);
+    // }
     table[non_terminal][terminal] = {isSync, production};
 }
 
@@ -37,19 +37,21 @@ ParseTable generateParserTable(
 
         // Iterate over the FIRST sets for this non-terminal
         for (const auto& [terminal, production] : first_sets_with_productions.at(non_terminal)) {
-            if (terminal != "epslon") {
+            if (terminal != "\\L") {
                 addToParseTable(parse_table, non_terminal, terminal, production, false);
             }
         }
 
         // Handle epsilon productions
-        if (first_sets_with_productions.at(non_terminal).count("epslon")) {
+        if (first_sets_with_productions.at(non_terminal).count("\\L")) {
             for (const auto& terminal : follow_sets.at(non_terminal)) {
-                addToParseTable(parse_table, non_terminal, terminal, {{"epslon", ParseUnitType::TERMINAL}}, false);
+                addToParseTable(parse_table, non_terminal, terminal, {{"\\L", ParseUnitType::TERMINAL}}, false);
             }
         }else {
             for (const auto& terminal : follow_sets.at(non_terminal)) {
-                addToParseTable(parse_table, non_terminal, terminal, {}, true);
+                if (parse_table[non_terminal][terminal].second.empty()) {
+                    addToParseTable(parse_table, non_terminal, terminal, {}, true);
+                }
             }
         }
     }

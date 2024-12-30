@@ -12,13 +12,13 @@ bool areSetsEqual(const std::set<std::string>& set1, const std::set<std::string>
 
 // Test for Simple Grammar
 TEST(FirstFollowGeneratorTest, SimpleGrammar) {
-    std::set<std::string> terminals = {"a", "b", "epslon"};
+    std::set<std::string> terminals = {"a", "b", "\\L"};
     std::set<std::string> non_terminals = {"S", "A", "B"};
     std::string start_symbol = "S";
 
     std::vector<ParseRule> rules = {
         {"S", {{{"A", ParseUnitType::NON_TERMINAL}, {"B", ParseUnitType::NON_TERMINAL}}}},
-        {"A", {{{"a", ParseUnitType::TERMINAL}}, {{"epslon", ParseUnitType::TERMINAL}}}},
+        {"A", {{{"a", ParseUnitType::TERMINAL}}, {{"\\L", ParseUnitType::TERMINAL}}}},
         {"B", {{{"b", ParseUnitType::TERMINAL}}}}
     };
 
@@ -28,8 +28,8 @@ TEST(FirstFollowGeneratorTest, SimpleGrammar) {
 
     // Expected FIRST sets
     std::map<std::string, std::set<std::string>> expected_first = {
-        {"S", {"a", "b", "epslon"}},
-        {"A", {"a", "epslon"}},
+        {"S", {"a", "b", "\\L"}},
+        {"A", {"a", "\\L"}},
         {"B", {"b"}}
     };
 
@@ -103,17 +103,17 @@ TEST(FirstFollowGeneratorTest, RecursiveGrammar) {
 
 TEST(FirstFollowGeneratorTest, ProvidedGrammar) {
     // Define terminals, non-terminals, start symbol, and production rules
-    const std::set<std::string> terminals = {"+", "*", "(", ")", "id", "addop", "mulop", "num", "epslon"};
+    const std::set<std::string> terminals = {"+", "*", "(", ")", "id", "addop", "mulop", "num", "\\L"};
     const std::set<std::string> non_terminals = {"E", "E'", "T", "T'", "F"};
     const std::string start_symbol = "E";
 
     std::vector<ParseRule> production_rules = {
         {"E", {{{"T", ParseUnitType::NON_TERMINAL}, {"E'", ParseUnitType::NON_TERMINAL}}}},
         {"E'", {{{"addop", ParseUnitType::TERMINAL}, {"T", ParseUnitType::NON_TERMINAL}, {"E'", ParseUnitType::NON_TERMINAL}},
-                {{"epslon", ParseUnitType::TERMINAL}}}},
+                {{"\\L", ParseUnitType::TERMINAL}}}},
         {"T", {{{"F", ParseUnitType::NON_TERMINAL}, {"T'", ParseUnitType::NON_TERMINAL}}}},
         {"T'", {{{"mulop", ParseUnitType::TERMINAL}, {"F", ParseUnitType::NON_TERMINAL}, {"T'", ParseUnitType::NON_TERMINAL}},
-                {{"epslon", ParseUnitType::TERMINAL}}}},
+                {{"\\L", ParseUnitType::TERMINAL}}}},
         {"F", {{{"(", ParseUnitType::TERMINAL}, {"E", ParseUnitType::NON_TERMINAL}, {")", ParseUnitType::TERMINAL}},
                {{"num", ParseUnitType::TERMINAL}}}}
     };
@@ -126,9 +126,9 @@ TEST(FirstFollowGeneratorTest, ProvidedGrammar) {
     // Expected FIRST sets
     std::map<std::string, std::set<std::string>> expected_first = {
         {"E", {"(", "num"}},
-        {"E'", {"addop", "epslon"}},
+        {"E'", {"addop", "\\L"}},
         {"T", {"(", "num"}},
-        {"T'", {"mulop", "epslon"}},
+        {"T'", {"mulop", "\\L"}},
         {"F", {"(", "num"}}
     };
 

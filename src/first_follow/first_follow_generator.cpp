@@ -65,7 +65,7 @@ void FirstFollowGenerator::computeFirst(const ParseRule& rule) {
             if (production.type == ParseUnitType::TERMINAL) {
                 tokens.insert(production.lhs);
                 token_to_production[production.lhs] = productions;
-                if (production.lhs != "epslon")
+                if (production.lhs != "//L")
                     break;
             }
             else {
@@ -76,7 +76,7 @@ void FirstFollowGenerator::computeFirst(const ParseRule& rule) {
                     tokens.insert(token);
                     token_to_production[token] = productions;
                 }
-                if (tokens.find("epslon") == tokens.end()) {
+                if (tokens.find("//L") == tokens.end()) {
                     break;
                 }
             }
@@ -108,7 +108,7 @@ void FirstFollowGenerator::computeFollow(const std::string& non_terminal) {
                         continue;
                     }
                     for (auto& token : first_sets[productions[i+1].lhs]) {
-                        if (token != "epslon") {
+                        if (token != "\\L") {
                             tokens.insert(token);
                         }
                         else {

@@ -165,7 +165,9 @@ public:
     Token() : index(-1), token_name("NO_TOKEN") {}  // Default constructor
 
     bool operator<(const Token& other) const {
-        return index < other.index;
+        if (index != other.index)
+            return index < other.index;
+        return token_name < other.token_name;
     }
 
     bool operator==(const Token& other) const {

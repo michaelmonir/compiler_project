@@ -3,6 +3,8 @@
 //
 
 #include "ParcerStream.h"
+
+#include <algorithm>
 #include <stack>
 
 void bbbb() {}
@@ -33,23 +35,44 @@ void initialize_stack(ParseUnit start_symbol) {
     parse_stack.push(root);
 }
 
-void left_most_print_node(Node *node) {
+void left_most_print_node(Node *node, vector<string> &output) {
     if (!node) return;
 
     if (node->unit.type == ParseUnitType::TERMINAL) {
-        cout << terminal_map[node->unit].token_name << " ";
+        output.push_back(terminal_map[node->unit].token_name);
     } else {
         for (Node* child : node->children) {
-            left_most_print_node(child);
+            left_most_print_node(child, output);
         }
     }
 }
 
 void left_most_print_root() {
-    left_most_print_node(root);
+    if (parse_stack.size()) {
+        cout << "ERROR: Stack still has items\n";
+    }
+
+    vector<string> output;
+
+    left_most_print_node(root, output);
+    reverse(output.begin(), output.end());
+
+    for (const string& item : output) {
+        cout << item << " ";
+    }
+    cout << endl;
 }
 
 void stream_process_input_token(Token token) {
+    if (token.token_name == "id") {
+        int x = 0;
+        x++;
+    }
+    if (token.token_name == "relop") {
+        int x = 0;
+        x++;
+    }
+
     if (parse_stack.empty()) {
         cout << "EMPTY STACK: Error at token " << token.token_name << endl;
         return;
@@ -57,6 +80,11 @@ void stream_process_input_token(Token token) {
     Node* topNode = parse_stack.top();
     ParseUnit top = topNode->unit;
 
+    if (top.lhs == "\\L") {
+        parse_stack.pop();
+        stream_process_input_token(token);
+        return;
+    }
     if (top.type == ParseUnitType::TERMINAL) {
         if (terminal_map[top] != token) {
             cout << "Error at token " << token.token_name << endl;
@@ -77,9 +105,12 @@ void stream_process_input_token(Token token) {
             parse_stack.pop();
             for (auto it = item.rhs.rbegin(); it != item.rhs.rend(); it++) {
                 Node *newNode = new Node(*it);
-                topNode->children.push_back(newNode);
+                if (it->lhs != "\\L") {
+                    topNode->children.push_back(newNode);
+                }
                 parse_stack.push(newNode);
             }
+            stream_process_input_token(token);
         }
     }
 }
@@ -102,12 +133,11 @@ void initialize_terminal_map_and_parse_table_adapt
     }
     for (auto it = old_parse_unit.begin(); it != old_parse_unit.end(); it++) {
         ParseUnit b(it->first, ParseUnitType::NON_TERMINAL);
-        for (auto it2 = it->second.rbegin(); it2 != it->second.rend(); it2) {
-
-            Token t(0, it->first);
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++) {
+            Token t(0, it2->first);
             _parse_table[b][t] = ParseTableItem(it2->second.first, it2->second.second);
         }
     }
 
-    initialize_terminal_map_and_parse_table(terminal_map, _parse_table);
+    initialize_terminal_map_and_parse_table(_terminal_map, _parse_table);
 }
