@@ -51,10 +51,11 @@ int main() {
     vector<LexemeClass> results = lexicalAnalyzer(input_text, start_nodes);
 
     // Output the results
-    for (const LexemeClass& item : results) {
-        cout << item.lexemeClass << " " << item.lexeme << endl;
-    }
+    // for (const LexemeClass& item : results) {
+    //     cout << item.lexemeClass << " " << item.lexeme << endl;
+    // }
 
+    empty_stack_after_last_token();
     left_most_print_root();
     return 0;
 }

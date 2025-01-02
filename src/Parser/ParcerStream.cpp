@@ -64,15 +64,6 @@ void left_most_print_root() {
 }
 
 void stream_process_input_token(Token token) {
-    if (token.token_name == "id") {
-        int x = 0;
-        x++;
-    }
-    if (token.token_name == "relop") {
-        int x = 0;
-        x++;
-    }
-
     if (parse_stack.empty()) {
         cout << "EMPTY STACK: Error at token " << token.token_name << endl;
         return;
@@ -81,28 +72,39 @@ void stream_process_input_token(Token token) {
     ParseUnit top = topNode->unit;
 
     if (top.lhs == "\\L") {
+        cout << "Skipping \\L at the top of the stack" << endl;
         parse_stack.pop();
         stream_process_input_token(token);
         return;
     }
     if (top.type == ParseUnitType::TERMINAL) {
         if (terminal_map[top] != token) {
-            cout << "Error at token " << token.token_name << endl;
+            cout << "Error at token " << token.token_name << " and Top of stack : " << top.lhs << ": popping from parse stack" << endl;
+
+            parse_stack.pop();
+            stream_process_input_token(token);
+        } else {
+            cout << "matching terminal token with top of stack " << token.token_name << endl;
+            parse_stack.pop();
         }
-        parse_stack.pop();
     } else {
         if (parse_table[top].count(token) == 0) {
-            cout << "Error at token " << token.token_name << endl;
+            cout << "Error at token " << token.token_name << " and Top of stack : " << top.lhs << " : Discard token" << endl;
             return;
         }
         ParseTableItem item = parse_table[top][token];
 
         if (item.isSync) {
             parse_stack.pop();
-            cout << "Error at token " << token.token_name << endl;
-            stream_process_input_token(token);
+            cout << "Error at token " << token.token_name << " and Top of stack : " << top.lhs << ": Synced token : popping from parse stack only " << endl;
         } else {
+            cout << top.lhs << " -> ";
             parse_stack.pop();
+
+            for (auto it = item.rhs.begin(); it != item.rhs.end(); it++) {
+                cout << it->lhs << " ";
+            }
+
             for (auto it = item.rhs.rbegin(); it != item.rhs.rend(); it++) {
                 Node *newNode = new Node(*it);
                 if (it->lhs != "\\L") {
@@ -110,15 +112,16 @@ void stream_process_input_token(Token token) {
                 }
                 parse_stack.push(newNode);
             }
+            cout << endl;
             stream_process_input_token(token);
         }
     }
 }
 
+void empty_stack_after_last_token() {
+    stream_process_input_token(Token(0, "$"));
+}
 
-// void initialize_terminal_map_and_parse_table
-//     (map<ParseUnit, Token> _terminal_map,
-//      map<ParseUnit, map<Token, ParseTableItem>> _parse_table);
 void initialize_terminal_map_and_parse_table_adapt
     (set<string> terminal_set,
     std::map<std::string, std::map<std::string, std::pair<bool, std::vector<ParseUnit>>>> old_parse_unit) {
@@ -138,6 +141,8 @@ void initialize_terminal_map_and_parse_table_adapt
             _parse_table[b][t] = ParseTableItem(it2->second.first, it2->second.second);
         }
     }
+
+    _terminal_map[ParseUnit("$", ParseUnitType::TERMINAL)] = Token(0, "$");
 
     initialize_terminal_map_and_parse_table(_terminal_map, _parse_table);
 }
